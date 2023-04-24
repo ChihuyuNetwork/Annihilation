@@ -1,11 +1,13 @@
 package love.chihuyu.annihilation.game
 
+import love.chihuyu.annihilation.utils.BlockUtils.getFortuneDrops
 import love.chihuyu.timerapi.TimerAPI
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
+
 
 object MineHandler : Listener {
 
@@ -45,8 +47,7 @@ object MineHandler : Listener {
                     0
                 ) {
                     start {
-                        player.inventory.addItem(*block.getDrops(player.itemInHand).toTypedArray())
-                            .forEach { (_, item) ->
+                        player.inventory.addItem(*block.getFortuneDrops(player.itemInHand).toTypedArray()).forEach { (_, item) ->
                                 player.world.dropItemNaturally(player.location, item)
                             }
                         block.type = Material.BEDROCK
