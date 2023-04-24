@@ -31,6 +31,7 @@ repositories {
 dependencies {
     compileOnly("org.github.paperspigot:paperspigot-api:$pluginVersion-R0.1-SNAPSHOT")
     compileOnly("love.chihuyu:TimerAPI:1.2.1-SNAPSHOT")
+    compileOnly(fileTree("libs"))
     implementation(kotlin("stdlib"))
 }
 
@@ -60,7 +61,6 @@ tasks {
     shadowJar {
         val loweredProject = project.name.lowercase()
         exclude("org/slf4j/**")
-//        relocate("kotlin", "love.chihuyu.$loweredProject.lib.kotlin")
         archiveClassifier.set("")
     }
 
