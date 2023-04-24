@@ -12,7 +12,7 @@ plugins {
 }
 
 group = "love.chihuyu"
-version = "0.0.1-SNAPSHOT"
+version = "0.1.0"
 val pluginVersion: String by project.ext
 
 repositories {
@@ -29,10 +29,8 @@ repositories {
  */
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:$pluginVersion-R0.1-SNAPSHOT")
-    implementation("love.chihuyu:ChihuyuLib:0.1.4")
-    implementation("dev.jorel:commandapi-core:9.0.0")
-    implementation("dev.jorel:commandapi-kotlin:8.8.0")
+    compileOnly("org.github.paperspigot:paperspigot-api:$pluginVersion-R0.1-SNAPSHOT")
+    compileOnly("love.chihuyu:TimerAPI:1.2.1-SNAPSHOT")
     implementation(kotlin("stdlib"))
 }
 
@@ -62,8 +60,8 @@ tasks {
     shadowJar {
         val loweredProject = project.name.lowercase()
         exclude("org/slf4j/**")
-        relocate("kotlin", "love.chihuyu.$loweredProject.lib.kotlin")
-        relocate("dev.jorel.commandapi", "love.chihuyu.$loweredProject.lib.dev.jorel.commandapi")
+//        relocate("kotlin", "love.chihuyu.$loweredProject.lib.kotlin")
+        archiveClassifier.set("")
     }
 
     runServer {
@@ -81,7 +79,7 @@ nexusPublishing {
 }
 
 kotlin {
-    jvmToolchain(18)
+    jvmToolchain(8)
 }
 
 open class SetupTask : DefaultTask() {
