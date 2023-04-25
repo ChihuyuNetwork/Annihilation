@@ -33,7 +33,7 @@ repositories {
 dependencies {
     compileOnly("org.github.paperspigot:paperspigot-api:$pluginVersion-R0.1-SNAPSHOT")
     compileOnly("love.chihuyu:TimerAPI:1.2.1-SNAPSHOT")
-    compileOnly("com.sk89q.worldguard:worldguard-legacy:6.2")
+    compileOnly("com.sk89q:worldguard:6.1")
     compileOnly("com.sk89q.worldedit:worldedit-core:6.1.4-SNAPSHOT")
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:6.1.4-SNAPSHOT")
     compileOnly(fileTree("libs"))
