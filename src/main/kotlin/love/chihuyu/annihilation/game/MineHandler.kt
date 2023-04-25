@@ -21,7 +21,7 @@ object MineHandler : Listener {
         val player = e.player
         val tool = player.itemInHand ?: return
 
-        if (!block.isProperTool(tool.type)) {
+        if (!block.isProperTool(tool.type) && player.gameMode != GameMode.CREATIVE) {
             e.isCancelled = true
             return
         }
