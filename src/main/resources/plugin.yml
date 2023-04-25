@@ -3,3 +3,5 @@ main: @mainPackage@
 version: @version@
 depend:
   - TimerAPI
+  - WorldGuard
+  - WorldEdit
