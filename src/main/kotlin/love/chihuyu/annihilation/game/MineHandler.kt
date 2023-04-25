@@ -49,23 +49,23 @@ object MineHandler : Listener {
                     20,
                     0
                 ) {
+                    val origin = block.type
                     start {
-
                         if (block.type == Material.GRAVEL)
                             player.inventory.addItem(
-                                ItemStack(Material.STRING, Random.nextInt(3..5)),
-                                ItemStack(Material.FLINT, Random.nextInt(3..5)),
-                                ItemStack(Material.FEATHER, Random.nextInt(3..5)),
-                                ItemStack(Material.ARROW, Random.nextInt(1..4))
+                                ItemStack(Material.STRING, Random.nextInt(0..2)),
+                                ItemStack(Material.FLINT, Random.nextInt(0..2)),
+                                ItemStack(Material.FEATHER, Random.nextInt(0..2)),
+                                ItemStack(Material.ARROW, Random.nextInt(0..1))
                             )
                         else
                             player.inventory.addItem(*block.getFortuneDrops(tool).toTypedArray()).forEach { (_, item) ->
                                 player.world.dropItemNaturally(player.location, item)
                             }
-                        player.sendBlockChange(block.location, Material.BEDROCK, 0)
+                        block.type = Material.BEDROCK
                     }
                     end {
-                        player.sendBlockChange(block.location, block.type, block.data)
+                        block.type = origin
                     }
                 }.run()
             }
