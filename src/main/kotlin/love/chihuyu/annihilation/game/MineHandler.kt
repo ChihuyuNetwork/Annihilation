@@ -1,12 +1,16 @@
 package love.chihuyu.annihilation.game
 
 import love.chihuyu.annihilation.utils.BlockUtils.getFortuneDrops
+import love.chihuyu.annihilation.utils.BlockUtils.isProperTool
 import love.chihuyu.timerapi.TimerAPI
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.inventory.ItemStack
+import kotlin.random.Random
+import kotlin.random.nextInt
 
 
 object MineHandler : Listener {
@@ -15,8 +19,9 @@ object MineHandler : Listener {
     fun onMine(e: BlockBreakEvent) {
         val block = e.block
         val player = e.player
+        val tool = player.itemInHand ?: return
 
-        if (e.block.getDrops(e.player.itemInHand).isEmpty()) {
+        if (!block.isProperTool(tool.type)) {
             e.isCancelled = true
             return
         }
@@ -33,12 +38,10 @@ object MineHandler : Listener {
             Material.LOG,
             Material.MELON_BLOCK
             -> {
-                if (player.gameMode == GameMode.CREATIVE) return
-                if (block in PlacedBlockRegistry.blocks) {
+                if (block in PlacedBlockRegistry.blocks || player.gameMode == GameMode.CREATIVE) {
                     PlacedBlockRegistry.unregister(e)
                     return
                 }
-                val originType = block.type
                 e.isCancelled = true
                 TimerAPI.build(
                     "restore-mine-${System.currentTimeMillis()}",
@@ -47,13 +50,22 @@ object MineHandler : Listener {
                     0
                 ) {
                     start {
-                        player.inventory.addItem(*block.getFortuneDrops(player.itemInHand).toTypedArray()).forEach { (_, item) ->
+
+                        if (block.type == Material.GRAVEL)
+                            player.inventory.addItem(
+                                ItemStack(Material.STRING, Random.nextInt(3..5)),
+                                ItemStack(Material.FLINT, Random.nextInt(3..5)),
+                                ItemStack(Material.FEATHER, Random.nextInt(3..5)),
+                                ItemStack(Material.ARROW, Random.nextInt(1..4))
+                            )
+                        else
+                            player.inventory.addItem(*block.getFortuneDrops(tool).toTypedArray()).forEach { (_, item) ->
                                 player.world.dropItemNaturally(player.location, item)
                             }
-                        block.type = Material.BEDROCK
+                        player.sendBlockChange(block.location, Material.BEDROCK, 0)
                     }
                     end {
-                        block.type = originType
+                        player.sendBlockChange(block.location, block.type, block.data)
                     }
                 }.run()
             }
