@@ -21,7 +21,6 @@ repositories {
     maven("https://repo.hirosuke.me/repository/maven-public/")
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://hub.spigotmc.org/nexus/content/repositories/public/")
-    maven("https://maven.enginehub.org/repo/")
 }
 
 /*
@@ -33,9 +32,6 @@ repositories {
 dependencies {
     compileOnly("org.github.paperspigot:paperspigot-api:$pluginVersion-R0.1-SNAPSHOT")
     compileOnly("love.chihuyu:TimerAPI:1.2.1-SNAPSHOT")
-    compileOnly("com.sk89q:worldguard:6.1")
-    compileOnly("com.sk89q.worldedit:worldedit-core:6.1.4-SNAPSHOT")
-    compileOnly("com.sk89q.worldedit:worldedit-bukkit:6.1.4-SNAPSHOT")
     compileOnly(fileTree("libs"))
     implementation(kotlin("stdlib"))
 }

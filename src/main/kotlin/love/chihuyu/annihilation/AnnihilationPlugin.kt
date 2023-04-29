@@ -1,7 +1,5 @@
 package love.chihuyu.annihilation
 
-import com.sk89q.worldedit.WorldEdit
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin
 import love.chihuyu.annihilation.game.*
 import love.chihuyu.annihilation.map.AnnihilationMap
 import org.bukkit.ChatColor
@@ -14,8 +12,6 @@ class AnnihilationPlugin : JavaPlugin() {
     companion object {
         val prefix = "${ChatColor.GOLD}[Anni]"
         lateinit var AnnihilationPlugin: JavaPlugin
-        lateinit var worldGuard: WorldGuardPlugin
-        lateinit var worldEdit: WorldEdit
         lateinit var AnnihilationMapConfig: YamlConfiguration
     }
 
@@ -39,8 +35,5 @@ class AnnihilationPlugin : JavaPlugin() {
         server.pluginManager.registerEvents(PlacedBlockRegistry, this)
         server.pluginManager.registerEvents(NexusHandler, this)
         server.pluginManager.registerEvents(VanillaEventCanceller, this)
-
-        worldEdit = WorldEdit.getInstance()
-        worldGuard = WorldGuardPlugin.inst()
     }
 }
