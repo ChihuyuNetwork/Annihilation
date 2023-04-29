@@ -4,58 +4,79 @@ import love.chihuyu.annihilation.AnnihilationPlugin.Companion.AnnihilationPlugin
 import love.chihuyu.annihilation.AnnihilationPlugin.Companion.prefix
 import love.chihuyu.annihilation.map.AnnihilationMap
 import love.chihuyu.timerapi.TimerAPI
+import love.chihuyu.timerapi.timer.Timer
 import org.bukkit.ChatColor
 
 class AnnihilationGame(
-    teams: MutableList<ChatColor>,
     val map: AnnihilationMap
 ) {
-    val nexus = teams.associateWith { 75 }.toMutableMap()
-    val phaseTimers = mutableMapOf(
-        Phase.FIRST to TimerAPI.build("phase-1-${map.displayName}", 600, 20, 0) {
-            AnnihilationPlugin.server.broadcastMessage("""$prefix ${ChatColor.GOLD}フェーズが変わりました
-                ${ChatColor.RESET}■${ChatColor.GOLD}■■${ChatColor.RESET}■■
-                ${ChatColor.RESET}■■${ChatColor.GOLD}■${ChatColor.RESET}■■
-                ${ChatColor.RESET}■■${ChatColor.GOLD}■${ChatColor.RESET}■■
-                ${ChatColor.RESET}■■${ChatColor.GOLD}■${ChatColor.RESET}■■
-                ${ChatColor.RESET}■${ChatColor.GOLD}■■■${ChatColor.RESET}■
+    var currentPhase = Phase.FIRST
+    val nexus = map.teams.associateWith { 100 }.toMutableMap()
+    val phaseTimer: Timer = TimerAPI.build("phaseTimer-${map.id}", 600 * 4, 20, 0) {
+        start {
+            currentPhase = Phase.FIRST
+            AnnihilationPlugin.server.broadcastMessage("""
+                $prefix ${ChatColor.GOLD}ゲームが開始されました
+                $prefix ${ChatColor.RESET}■${ChatColor.GOLD}■■${ChatColor.RESET}■■
+                $prefix ${ChatColor.RESET}■■${ChatColor.GOLD}■${ChatColor.RESET}■■
+                $prefix ${ChatColor.RESET}■■${ChatColor.GOLD}■${ChatColor.RESET}■■
+                $prefix ${ChatColor.RESET}■■${ChatColor.GOLD}■${ChatColor.RESET}■■
+                $prefix ${ChatColor.RESET}■${ChatColor.GOLD}■■■${ChatColor.RESET}■
             """.trimMargin())
-        },
-        Phase.SECOND to TimerAPI.build("phase-1-${map.displayName}", 600, 20, 0) {
-            AnnihilationPlugin.server.broadcastMessage("""$prefix ${ChatColor.GOLD}フェーズが変わりました
-                ${ChatColor.RESET}■${ChatColor.GOLD}■■■${ChatColor.RESET}■
-                ${ChatColor.RESET}■■■${ChatColor.GOLD}■${ChatColor.RESET}■
-                ${ChatColor.RESET}■${ChatColor.GOLD}■■■${ChatColor.RESET}■
-                ${ChatColor.RESET}■${ChatColor.GOLD}■${ChatColor.RESET}■■■
-                ${ChatColor.RESET}■${ChatColor.GOLD}■■■${ChatColor.RESET}■
+        }
+        tick {
+            when (elapsed) {
+                600L -> {
+                    currentPhase = Phase.SECOND
+                    AnnihilationPlugin.server.broadcastMessage("""
+                        $prefix ${ChatColor.GOLD}フェーズが変わりました
+                        $prefix ${ChatColor.RESET}■${ChatColor.GOLD}■■■${ChatColor.RESET}■
+                        $prefix ${ChatColor.RESET}■■■${ChatColor.GOLD}■${ChatColor.RESET}■
+                        $prefix ${ChatColor.RESET}■${ChatColor.GOLD}■■■${ChatColor.RESET}■
+                        $prefix ${ChatColor.RESET}■${ChatColor.GOLD}■${ChatColor.RESET}■■■
+                        $prefix ${ChatColor.RESET}■${ChatColor.GOLD}■■■${ChatColor.RESET}■
+                        $prefix ${ChatColor.GOLD}・ネクサスダメージ
+                    """.trimMargin())
+                }
+                600L * 2 -> {
+                    currentPhase = Phase.THIRD
+                        AnnihilationPlugin.server.broadcastMessage("""
+                        $prefix ${ChatColor.GOLD}フェーズが変わりました
+                        $prefix ${ChatColor.RESET}■${ChatColor.GOLD}■■■${ChatColor.RESET}■
+                        $prefix ${ChatColor.RESET}■■■${ChatColor.GOLD}■${ChatColor.RESET}■
+                        $prefix ${ChatColor.RESET}■${ChatColor.GOLD}■■■${ChatColor.RESET}■
+                        $prefix ${ChatColor.RESET}■■■${ChatColor.GOLD}■${ChatColor.RESET}■
+                        $prefix ${ChatColor.RESET}■${ChatColor.GOLD}■■■${ChatColor.RESET}■
+                        $prefix ${ChatColor.GOLD}・ダイヤモンドスポーン
+                        $prefix ${ChatColor.GOLD}・ウィッチスポーン
+                    """.trimMargin())
+                }
+                600L * 3 -> {
+                    currentPhase = Phase.FOURTH
+                    AnnihilationPlugin.server.broadcastMessage("""
+                        $prefix ${ChatColor.GOLD}フェーズが変わりました
+                        $prefix ${ChatColor.RESET}■${ChatColor.GOLD}■${ChatColor.RESET}■${ChatColor.GOLD}■${ChatColor.RESET}■
+                        $prefix ${ChatColor.RESET}■${ChatColor.GOLD}■${ChatColor.RESET}■${ChatColor.GOLD}■${ChatColor.RESET}■
+                        $prefix ${ChatColor.RESET}■${ChatColor.GOLD}■■■${ChatColor.RESET}■
+                        $prefix ${ChatColor.RESET}■■■${ChatColor.GOLD}■${ChatColor.RESET}■
+                        $prefix ${ChatColor.RESET}■■■${ChatColor.GOLD}■${ChatColor.RESET}■
+                        $prefix ${ChatColor.GOLD}・ショップにブレイズパウダー追加
+                        $prefix ${ChatColor.GOLD}・ミッドに黒曜石バフ出現
+                    """.trimMargin())
+                }
+            }
+        }
+        end {
+            currentPhase = Phase.LAST
+            AnnihilationPlugin.server.broadcastMessage("""
+                $prefix ${ChatColor.GOLD}フェーズが変わりました
+                $prefix ${ChatColor.RESET}■${ChatColor.GOLD}■■■${ChatColor.RESET}■
+                $prefix ${ChatColor.RESET}■${ChatColor.GOLD}■${ChatColor.RESET}■■■
+                $prefix ${ChatColor.RESET}■${ChatColor.GOLD}■■■${ChatColor.RESET}■
+                $prefix ${ChatColor.RESET}■■■${ChatColor.GOLD}■${ChatColor.RESET}■
+                $prefix ${ChatColor.RESET}■${ChatColor.GOLD}■■■${ChatColor.RESET}■
+                $prefix ${ChatColor.GOLD}・2x ネクサスダメージ
             """.trimMargin())
-        },
-        Phase.THIRD to TimerAPI.build("phase-1-${map.displayName}", 600, 20, 0) {
-            AnnihilationPlugin.server.broadcastMessage("""$prefix ${ChatColor.GOLD}フェーズが変わりました
-                ${ChatColor.RESET}■${ChatColor.GOLD}■■■${ChatColor.RESET}■
-                ${ChatColor.RESET}■■■${ChatColor.GOLD}■${ChatColor.RESET}■
-                ${ChatColor.RESET}■${ChatColor.GOLD}■■■${ChatColor.RESET}■
-                ${ChatColor.RESET}■■■${ChatColor.GOLD}■${ChatColor.RESET}■
-                ${ChatColor.RESET}■${ChatColor.GOLD}■■■${ChatColor.RESET}■
-            """.trimMargin())
-        },
-        Phase.FOURTH to TimerAPI.build("phase-1-${map.displayName}", 600, 20, 0) {
-            AnnihilationPlugin.server.broadcastMessage("""$prefix ${ChatColor.GOLD}フェーズが変わりました
-                ${ChatColor.RESET}■${ChatColor.GOLD}■${ChatColor.RESET}■${ChatColor.GOLD}■${ChatColor.RESET}■
-                ${ChatColor.RESET}■${ChatColor.GOLD}■${ChatColor.RESET}■${ChatColor.GOLD}■${ChatColor.RESET}■
-                ${ChatColor.RESET}■${ChatColor.GOLD}■■■${ChatColor.RESET}■
-                ${ChatColor.RESET}■■■${ChatColor.GOLD}■${ChatColor.RESET}■
-                ${ChatColor.RESET}■■■${ChatColor.GOLD}■${ChatColor.RESET}■
-            """.trimMargin())
-        },
-        Phase.LAST to TimerAPI.build("phase-1-${map.displayName}", 600, 20, 0) {
-            AnnihilationPlugin.server.broadcastMessage("""$prefix ${ChatColor.GOLD}フェーズが変わりました
-                ${ChatColor.RESET}■${ChatColor.GOLD}■■■${ChatColor.RESET}■
-                ${ChatColor.RESET}■${ChatColor.GOLD}■${ChatColor.RESET}■■■
-                ${ChatColor.RESET}■${ChatColor.GOLD}■■■${ChatColor.RESET}■
-                ${ChatColor.RESET}■■■${ChatColor.GOLD}■${ChatColor.RESET}■
-                ${ChatColor.RESET}■${ChatColor.GOLD}■■■${ChatColor.RESET}■
-            """.trimMargin())
-        },
-    )
+        }
+    }
 }

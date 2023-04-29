@@ -3,5 +3,13 @@ main: @mainPackage@
 version: @version@
 depend:
   - TimerAPI
-  - WorldGuard
   - WorldEdit
+commands:
+  shuffle:
+    permission: annihilation.command.shuffle
+permissions:
+  annihilation.command.*:
+    children:
+      annihilation.command.shuffle: true
+  annihilation.command.shuffle:
+    default: op

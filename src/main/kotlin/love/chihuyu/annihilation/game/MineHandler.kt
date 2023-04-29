@@ -20,6 +20,12 @@ object MineHandler : Listener {
         val block = e.block
         val player = e.player
         val tool = player.itemInHand ?: return
+        val currentGame = AnnihilationGameManager.currentGame
+
+        if (currentGame != null && currentGame.map.protectedZone.any { block.x in it.x && block.y in it.y } && player.gameMode != GameMode.CREATIVE) {
+            e.isCancelled = true
+            return
+        }
 
         if (!block.isProperTool(tool.type) && player.gameMode != GameMode.CREATIVE) {
             e.isCancelled = true
@@ -62,6 +68,7 @@ object MineHandler : Listener {
                             player.inventory.addItem(*block.getFortuneDrops(tool).toTypedArray()).forEach { (_, item) ->
                                 player.world.dropItemNaturally(player.location, item)
                             }
+                        player.giveExp(e.expToDrop)
                         block.type = Material.BEDROCK
                     }
                     end {
