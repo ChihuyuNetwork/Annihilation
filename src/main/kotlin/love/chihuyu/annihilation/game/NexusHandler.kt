@@ -8,14 +8,14 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 
-object NexusHandler: Listener {
+object NexusHandler : Listener {
 
     @EventHandler
     fun onNexus(e: BlockBreakEvent) {
         val block = e.block
         val currentGame = AnnihilationGameManager.currentGame
 
-        if (block.type != Material.ENDER_STONE || currentGame== null || currentGame.currentPhase.int < 2) return
+        if (block.type != Material.ENDER_STONE || currentGame == null || currentGame.currentPhase.int < 2) return
 
         val player = e.player
         val team = AnnihilationGameManager.currentGame!!.map.nexusLocations.toList().first { it.second == block.location }.first

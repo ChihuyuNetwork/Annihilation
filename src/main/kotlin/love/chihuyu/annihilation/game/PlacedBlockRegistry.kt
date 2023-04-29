@@ -7,7 +7,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 
-object PlacedBlockRegistry: Listener {
+object PlacedBlockRegistry : Listener {
     val blocks = mutableListOf<Block>()
 
     // run in MineHandler#onMine(BlockBreakEvent)

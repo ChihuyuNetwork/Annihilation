@@ -13,7 +13,7 @@ class AnnihilationMap(
     val nexusLocations: MutableMap<ChatColor, Location> = mutableMapOf(),
     val spawns: MutableMap<ChatColor, MutableList<Location>> = mutableMapOf(),
     val protectedZone: MutableList<ProtectedZone>
-): ConfigurationSerializable {
+) : ConfigurationSerializable {
     override fun serialize(): MutableMap<String, Any> {
         return mutableMapOf(
             "id" to id,

@@ -6,7 +6,7 @@ import love.chihuyu.annihilation.game.AnnihilationGameManager
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 
-object ShuffleCommand: Command("shuffle") {
+object ShuffleCommand : Command("shuffle") {
     override fun onCommand(sender: CommandSender, label: String, args: Array<out String>) {
         AnnihilationGameManager.shuffleTeam()
         sender.sendMessage("$prefix ${ChatColor.RESET}チームをシャッフルしました")

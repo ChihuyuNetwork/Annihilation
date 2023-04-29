@@ -10,7 +10,7 @@ import org.bukkit.configuration.serialization.ConfigurationSerialization
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
 
-class AnnihilationPlugin: JavaPlugin() {
+class AnnihilationPlugin : JavaPlugin() {
     companion object {
         val prefix = "${ChatColor.GOLD}[Anni]"
         lateinit var AnnihilationPlugin: JavaPlugin

@@ -6,7 +6,7 @@ import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabCompleter
 
-abstract class Command(private val name: String): CommandExecutor, TabCompleter {
+abstract class Command(private val name: String) : CommandExecutor, TabCompleter {
     fun register() {
         val command = AnnihilationPlugin.getCommand(name) ?: throw IllegalStateException()
         command.executor = this

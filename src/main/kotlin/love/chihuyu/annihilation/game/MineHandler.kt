@@ -12,7 +12,6 @@ import org.bukkit.inventory.ItemStack
 import kotlin.random.Random
 import kotlin.random.nextInt
 
-
 object MineHandler : Listener {
 
     @EventHandler
@@ -57,17 +56,18 @@ object MineHandler : Listener {
                 ) {
                     val origin = block.type
                     start {
-                        if (block.type == Material.GRAVEL)
+                        if (block.type == Material.GRAVEL) {
                             player.inventory.addItem(
                                 ItemStack(Material.STRING, Random.nextInt(0..2)),
                                 ItemStack(Material.FLINT, Random.nextInt(0..2)),
                                 ItemStack(Material.FEATHER, Random.nextInt(0..2)),
                                 ItemStack(Material.ARROW, Random.nextInt(0..1))
                             )
-                        else
+                        } else {
                             player.inventory.addItem(*block.getFortuneDrops(tool).toTypedArray()).forEach { (_, item) ->
                                 player.world.dropItemNaturally(player.location, item)
                             }
+                        }
                         player.giveExp(e.expToDrop)
                         block.type = Material.BEDROCK
                     }

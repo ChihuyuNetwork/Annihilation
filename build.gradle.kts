@@ -54,11 +54,16 @@ tasks {
         duplicatesStrategy = DuplicatesStrategy.INCLUDE
 
         from(sourceSets.main.get().resources.srcDirs) {
-            filter(org.apache.tools.ant.filters.ReplaceTokens::class, mapOf("tokens" to mapOf(
-                "version" to project.version.toString(),
-                "name" to project.name,
-                "mainPackage" to "love.chihuyu.${project.name.lowercase()}.${project.name}Plugin"
-            )))
+            filter(
+                org.apache.tools.ant.filters.ReplaceTokens::class,
+                mapOf(
+                    "tokens" to mapOf(
+                        "version" to project.version.toString(),
+                        "name" to project.name,
+                        "mainPackage" to "love.chihuyu.${project.name.lowercase()}.${project.name}Plugin"
+                    )
+                )
+            )
             filteringCharset = "UTF-8"
         }
     }

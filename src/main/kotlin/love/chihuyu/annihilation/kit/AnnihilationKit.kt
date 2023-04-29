@@ -10,5 +10,4 @@ package love.chihuyu.annihilation.kit
  * Farmer
  */
 
-interface AnnihilationKit {
-}
+interface AnnihilationKit

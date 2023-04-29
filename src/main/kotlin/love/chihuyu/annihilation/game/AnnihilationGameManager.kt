@@ -20,10 +20,12 @@ object AnnihilationGameManager {
         if (currentGame == null) return
 
         val wonTeam = currentGame!!.nexus.toList().sortedByDescending { it.second }[0].first
-        AnnihilationPlugin.server.broadcastMessage("""
+        AnnihilationPlugin.server.broadcastMessage(
+            """
             $prefix ${ChatColor.RESET}ゲームが終了しました！
             $prefix ${wonTeam}${AnnihilationPlugin.server.scoreboardManager.mainScoreboard.getTeam(wonTeam.name).name}${ChatColor.RESET}チームの勝利です
-        """.trimIndent())
+            """.trimIndent()
+        )
 
         currentGame?.map?.nexusLocations?.forEach { (_, nexus) ->
             nexus.block.type = Material.ENDER_STONE

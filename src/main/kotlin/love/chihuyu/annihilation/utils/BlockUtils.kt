@@ -90,7 +90,7 @@ object BlockUtils {
             Material.SPRUCE_DOOR,
             Material.TRAP_DOOR,
             Material.WOODEN_DOOR,
-            Material.WOOD_DOOR, -> {
+            Material.WOOD_DOOR -> {
                 material in axes
             }
 
@@ -105,12 +105,16 @@ object BlockUtils {
 
     fun Block.getFortuneDrops(itemStack: ItemStack): MutableCollection<ItemStack> {
         val originDrops = getDrops(itemStack)
-        return if (originDrops.isEmpty()) originDrops else {
+        return if (originDrops.isEmpty()) {
+            originDrops
+        } else {
             if (itemStack.containsEnchantment(Enchantment.LOOT_BONUS_BLOCKS)) {
                 repeat(itemStack.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS)) {
-                    if (Random.nextInt(100) <= (100 / itemStack.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS) + 2)) originDrops += getDrops(
-                        itemStack
-                    )
+                    if (Random.nextInt(100) <= (100 / itemStack.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS) + 2)) {
+                        originDrops += getDrops(
+                            itemStack
+                        )
+                    }
                 }
             }
             originDrops ?: mutableListOf()

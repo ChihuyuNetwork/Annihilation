@@ -11,7 +11,7 @@ import org.bukkit.ChatColor
 import org.bukkit.Location
 import org.bukkit.command.CommandSender
 
-object SetMapCommand: Command("setmap") {
+object SetMapCommand : Command("setmap") {
     override fun onCommand(sender: CommandSender, label: String, args: Array<out String>) {
         AnnihilationGameManager.currentGame = AnnihilationGame(
             AnnihilationMap(
@@ -21,7 +21,7 @@ object SetMapCommand: Command("setmap") {
                 AnnihilationMapConfig.getList("enderFurnaces") as MutableList<Location>,
                 AnnihilationMapConfig.getList("nexusLocations")[0] as MutableMap<ChatColor, Location>,
                 AnnihilationMapConfig.getList("spawns") as MutableMap<ChatColor, MutableList<Location>>,
-                AnnihilationMapConfig.getList("protectedZone") as MutableList<ProtectedZone>,
+                AnnihilationMapConfig.getList("protectedZone") as MutableList<ProtectedZone>
             )
         )
         sender.sendMessage("$prefix ${ChatColor.RESET}マップを変更しました")

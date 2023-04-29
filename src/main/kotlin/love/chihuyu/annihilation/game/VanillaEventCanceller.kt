@@ -7,7 +7,7 @@ import org.bukkit.event.block.LeavesDecayEvent
 import org.bukkit.event.entity.EntityChangeBlockEvent
 import org.bukkit.event.weather.WeatherChangeEvent
 
-object VanillaEventCanceller: Listener {
+object VanillaEventCanceller : Listener {
 
     @EventHandler
     fun onLeave(e: LeavesDecayEvent) {
