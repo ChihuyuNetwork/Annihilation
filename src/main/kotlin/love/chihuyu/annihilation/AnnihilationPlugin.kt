@@ -17,9 +17,6 @@ class AnnihilationPlugin : JavaPlugin() {
 
     init {
         AnnihilationPlugin = this
-        AnnihilationMapConfig = YamlConfiguration().also {
-            it.load(File(AnnihilationPlugin.dataFolder, "maps.yml"))
-        }
     }
 
     override fun onEnable() {
@@ -30,6 +27,10 @@ class AnnihilationPlugin : JavaPlugin() {
 
         saveDefaultConfig()
         saveResource("maps.yml", false)
+
+        AnnihilationMapConfig = YamlConfiguration().also {
+            it.load(File(AnnihilationPlugin.dataFolder, "maps.yml"))
+        }
 
         server.pluginManager.registerEvents(MineHandler, this)
         server.pluginManager.registerEvents(PlacedBlockRegistry, this)
