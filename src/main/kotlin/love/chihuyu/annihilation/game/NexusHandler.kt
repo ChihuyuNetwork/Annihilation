@@ -18,17 +18,17 @@ object NexusHandler : Listener {
         if (block.type != Material.ENDER_STONE || currentGame == null || currentGame.currentPhase.int < 2) return
 
         val player = e.player
-        val team = AnnihilationGameManager.currentGame!!.map.nexusLocations.toList().first { it.second == block.location }.first
+        val team = currentGame.map.nexusLocations.toList().first { it.second == block.location }.first
         val mainScoreboard = AnnihilationPlugin.server.scoreboardManager.mainScoreboard
 
-        AnnihilationGameManager.currentGame!!.nexus[team] = AnnihilationGameManager.currentGame!!.nexus[team]!!.dec()
+        currentGame.nexus[team] = currentGame.nexus[team]!!.dec()
         AnnihilationPlugin.server.broadcastMessage("$prefix ${ChatColor.valueOf(mainScoreboard.getTeam(player.name).name)}${player.displayName}が${team}ネクサス${ChatColor.RESET}を攻撃しました")
-        if (AnnihilationGameManager.currentGame!!.nexus[team] == 0) {
+        if (currentGame.nexus[team] == 0) {
             block.type = Material.BEDROCK
             AnnihilationPlugin.server.broadcastMessage("$prefix ${team}${mainScoreboard.getTeam(team.name).name}${ChatColor.RESET}が陥落しました")
         }
 
-        if (AnnihilationGameManager.currentGame!!.nexus.filter { it.value != 0 }.size < 2) {
+        if (currentGame.nexus.filter { it.value != 0 }.size < 2) {
             AnnihilationGameManager.end()
         }
     }
