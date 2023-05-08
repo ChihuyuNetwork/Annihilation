@@ -1,7 +1,17 @@
 package love.chihuyu.annihilation
 
-import love.chihuyu.annihilation.game.*
+import com.sk89q.worldedit.bukkit.WorldEditPlugin
+import love.chihuyu.annihilation.command.impl.MapConfigCommand
+import love.chihuyu.annihilation.command.impl.SetMapCommand
+import love.chihuyu.annihilation.command.impl.ShuffleCommand
+import love.chihuyu.annihilation.command.impl.StartCommand
+import love.chihuyu.annihilation.game.MineHandler
+import love.chihuyu.annihilation.game.NexusHandler
+import love.chihuyu.annihilation.game.PlacedBlockRegistry
+import love.chihuyu.annihilation.game.VanillaEventCanceller
 import love.chihuyu.annihilation.map.AnnihilationMap
+import love.chihuyu.annihilation.map.AnnihilationMapManager
+import love.chihuyu.annihilation.map.ProtectedZone
 import org.bukkit.ChatColor
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.configuration.serialization.ConfigurationSerialization
@@ -11,12 +21,16 @@ import java.io.File
 class AnnihilationPlugin : JavaPlugin() {
     companion object {
         val prefix = "${ChatColor.GOLD}[Anni]"
+        lateinit var mapFile: File
         lateinit var AnnihilationPlugin: JavaPlugin
         lateinit var AnnihilationMapConfig: YamlConfiguration
+        lateinit var WorldEditAPI: WorldEditPlugin
+
     }
 
     init {
         AnnihilationPlugin = this
+        mapFile = File(dataFolder, "maps.yml")
     }
 
     override fun onEnable() {
@@ -25,12 +39,18 @@ class AnnihilationPlugin : JavaPlugin() {
         ConfigurationSerialization.registerClass(ProtectedZone::class.java)
         ConfigurationSerialization.registerClass(AnnihilationMap::class.java)
 
+        WorldEditAPI = server.pluginManager.getPlugin("WorldEdit") as WorldEditPlugin
+
+        AnnihilationMapConfig = YamlConfiguration.loadConfiguration(mapFile)
+
         saveDefaultConfig()
         saveResource("maps.yml", false)
+        AnnihilationMapManager.cache()
 
-        AnnihilationMapConfig = YamlConfiguration().also {
-            it.load(File(AnnihilationPlugin.dataFolder, "maps.yml"))
-        }
+        MapConfigCommand.register()
+        SetMapCommand.register()
+        ShuffleCommand.register()
+        StartCommand.register()
 
         server.pluginManager.registerEvents(MineHandler, this)
         server.pluginManager.registerEvents(PlacedBlockRegistry, this)

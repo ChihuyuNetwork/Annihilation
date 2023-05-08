@@ -7,9 +7,24 @@ depend:
 commands:
   shuffle:
     permission: annihilation.command.shuffle
+  setmap:
+    permission: annihilation.command.setmap
+  anni-start:
+    permission: annihilation.command.anni-start
+  mapconfig:
+    permission: annihilation.command.mapconfig
 permissions:
   annihilation.command.*:
     children:
       annihilation.command.shuffle: true
+      annihilation.command.setmap: true
+      annihilation.command.anni-start: true
+      annihilation.command.mapconfig: true
   annihilation.command.shuffle:
+    default: op
+  annihilation.command.setmap:
+    default: op
+  annihilation.command.anni-start:
+    default: op
+  annihilation.command.mapconfig:
     default: op
