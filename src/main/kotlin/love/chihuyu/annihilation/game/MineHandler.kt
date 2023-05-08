@@ -21,7 +21,12 @@ object MineHandler : Listener {
         val tool = player.itemInHand ?: return
         val currentGame = AnnihilationGameManager.currentGame
 
-        if (currentGame != null && currentGame.map.protectedZone.any { block.x in it.x && block.y in it.y } && player.gameMode != GameMode.CREATIVE) {
+        if (currentGame != null && block.location in currentGame.map.enderFurnaces) {
+            e.isCancelled = true
+            return
+        }
+
+        if (currentGame != null && currentGame.map.protectedZone.any { block.x in it.minX..it.maxX && block.z in it.minZ..it.maxZ } && player.gameMode != GameMode.CREATIVE) {
             e.isCancelled = true
             return
         }
