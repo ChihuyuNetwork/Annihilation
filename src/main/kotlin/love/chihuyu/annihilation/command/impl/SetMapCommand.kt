@@ -13,7 +13,7 @@ object SetMapCommand : Command("setmap") {
         if (args.isEmpty()) return
         val map = AnnihilationMapManager.cachedMaps[args[0]] ?: return
         AnnihilationGameManager.currentGame = AnnihilationGame(map)
-        sender.sendMessage("$prefix ${ChatColor.RESET}マップを変更しました")
+        sender.sendMessage("$prefix ${ChatColor.RESET}Map changed")
     }
 
     override fun onTabComplete(sender: CommandSender, label: String, args: Array<out String>): List<String> = emptyList()

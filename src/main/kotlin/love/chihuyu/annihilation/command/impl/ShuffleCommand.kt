@@ -9,7 +9,7 @@ import org.bukkit.command.CommandSender
 object ShuffleCommand : Command("shuffle") {
     override fun onCommand(sender: CommandSender, label: String, args: Array<out String>) {
         AnnihilationGameManager.shuffleTeam()
-        sender.sendMessage("$prefix ${ChatColor.RESET}チームをシャッフルしました")
+        sender.sendMessage("$prefix ${ChatColor.RESET}Shuffled team")
     }
 
     override fun onTabComplete(sender: CommandSender, label: String, args: Array<out String>): List<String> = emptyList()

@@ -22,7 +22,7 @@ object MapConfigCommand: Command("mapconfig") {
                 if (args.size < 2) return
                 val id = args[1]
                 AnnihilationMapManager.cachedMaps[id] = AnnihilationMap(id)
-                sender.sendMessage("$prefix マップを追加しました: $id")
+                sender.sendMessage("$prefix Map added: $id")
             }
             "displayname" -> {
                 if (args.size < 3) return
@@ -30,14 +30,14 @@ object MapConfigCommand: Command("mapconfig") {
                 val displayName = args[2]
                 AnnihilationPlugin.logger.info("set: ${AnnihilationMapManager.cachedMaps}")
                 map.displayName = displayName
-                sender.sendMessage("$prefix マップを編集しました: 表示名の設定")
+                sender.sendMessage("$prefix Map edited: display name")
             }
             "teams" -> {
                 if (args.size < 4) return
                 val map = AnnihilationMapManager.cachedMaps[args[1]]!!
                 val teams = args.drop(2).map { ChatColor.valueOf(it) }.toMutableList()
                 map.teams = teams
-                sender.sendMessage("$prefix マップを編集しました: チームの設定 -> [${teams.joinToString(", ") { "$it${it.name}${ChatColor.RESET}" }}]")
+                sender.sendMessage("$prefix Map edited: teams -> [${teams.joinToString(", ") { "$it${it.name}${ChatColor.RESET}" }}]")
             }
             "add-enderfurnace" -> {
                 if (args.size < 2) return
@@ -45,7 +45,7 @@ object MapConfigCommand: Command("mapconfig") {
                 val targetBlock = sender.getTargetBlock(setOf(Material.AIR), 3)
                 if (targetBlock.type != Material.FURNACE) return
                 map.enderFurnaces.add(targetBlock.location)
-                sender.sendMessage("$prefix マップを編集しました: エンダーかまどの追加")
+                sender.sendMessage("$prefix Map edited: added enderfurnace")
             }
             "remove-enderfurnace" -> {
                 if (args.size < 2) return
@@ -53,7 +53,7 @@ object MapConfigCommand: Command("mapconfig") {
                 val targetBlock = sender.getTargetBlock(setOf(Material.AIR), 3)
                 if (targetBlock.type != Material.FURNACE) return
                 map.enderFurnaces.remove(targetBlock.location)
-                sender.sendMessage("$prefix マップを編集しました: エンダーかまどの削除")
+                sender.sendMessage("$prefix Map edited: removed enderfurnace")
             }
             "nexus" -> {
                 if (args.size < 3) return
@@ -62,7 +62,7 @@ object MapConfigCommand: Command("mapconfig") {
                 val targetBlock = sender.getTargetBlock(setOf(Material.AIR), 3)
                 if (targetBlock.type != Material.ENDER_STONE) return
                 map.nexusLocations[team] = targetBlock.location
-                sender.sendMessage("$prefix マップを編集しました: ネクサス位置の設定")
+                sender.sendMessage("$prefix Map edited: set nexus location")
             }
             "add-spawn" -> {
                 if (args.size < 3) return
@@ -73,7 +73,7 @@ object MapConfigCommand: Command("mapconfig") {
                     y = y.roundToInt().toDouble()
                     z = z.roundToInt().toDouble()
                 }).toMutableList()
-                sender.sendMessage("$prefix マップを編集しました: スポーン地点の追加")
+                sender.sendMessage("$prefix Map edited: added spawn")
             }
             "remove-spawn" -> {
                 if (args.size < 3) return
@@ -84,7 +84,7 @@ object MapConfigCommand: Command("mapconfig") {
                     y = y.roundToInt().toDouble()
                     z = z.roundToInt().toDouble()
                 }).toMutableList()
-                sender.sendMessage("$prefix マップを編集しました: スポーン地点の削除")
+                sender.sendMessage("$prefix Map edited: removed spawn")
             }
             "add-protectedzone" -> {
                 if (args.size < 2) return
@@ -96,7 +96,7 @@ object MapConfigCommand: Command("mapconfig") {
                     region.minimumPoint.z.roundToInt(),
                     region.maximumPoint.z.roundToInt()
                 )
-                sender.sendMessage("$prefix マップを編集しました: 破壊不可領域の追加")
+                sender.sendMessage("$prefix Map edited: added protected zone")
             }
             "remove-protectedzone" -> {
                 if (args.size < 2) return
@@ -108,7 +108,7 @@ object MapConfigCommand: Command("mapconfig") {
                     region.minimumPoint.z.roundToInt(),
                     region.maximumPoint.z.roundToInt()
                 )
-                sender.sendMessage("$prefix マップを編集しました: 破壊不可領域の削除")
+                sender.sendMessage("$prefix Map edited: removed protected zone")
             }
         }
 

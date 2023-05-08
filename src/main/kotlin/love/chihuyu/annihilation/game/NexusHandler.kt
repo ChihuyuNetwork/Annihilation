@@ -22,10 +22,11 @@ object NexusHandler : Listener {
         val mainScoreboard = AnnihilationPlugin.server.scoreboardManager.mainScoreboard
 
         currentGame.nexus[team] = currentGame.nexus[team]!!.dec()
-        AnnihilationPlugin.server.broadcastMessage("$prefix ${ChatColor.valueOf(mainScoreboard.getTeam(player.name).name)}${player.displayName}が${team}ネクサス${ChatColor.RESET}を攻撃しました")
+        AnnihilationPlugin.server.broadcastMessage("$prefix ${mainScoreboard.getPlayerTeam(player).prefix}${player.displayName}${ChatColor.RESET} attacked ${team}Nexus (${currentGame.nexus[team]})")
+        AnnihilationScoreboardManager.updateAll(currentGame)
         if (currentGame.nexus[team] == 0) {
             block.type = Material.BEDROCK
-            AnnihilationPlugin.server.broadcastMessage("$prefix ${team}${mainScoreboard.getTeam(team.name).name}${ChatColor.RESET}が陥落しました")
+            AnnihilationPlugin.server.broadcastMessage("$prefix ${team}${mainScoreboard.getTeam(team.name).name}${ChatColor.RESET} Destroyed")
         }
 
         if (currentGame.nexus.filter { it.value != 0 }.size < 2) {
