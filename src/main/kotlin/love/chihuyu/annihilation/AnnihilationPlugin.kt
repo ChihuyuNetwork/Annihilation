@@ -5,10 +5,7 @@ import love.chihuyu.annihilation.command.impl.MapConfigCommand
 import love.chihuyu.annihilation.command.impl.SetMapCommand
 import love.chihuyu.annihilation.command.impl.ShuffleCommand
 import love.chihuyu.annihilation.command.impl.StartCommand
-import love.chihuyu.annihilation.game.MineHandler
-import love.chihuyu.annihilation.game.NexusHandler
-import love.chihuyu.annihilation.game.PlacedBlockRegistry
-import love.chihuyu.annihilation.game.VanillaEventCanceller
+import love.chihuyu.annihilation.game.*
 import love.chihuyu.annihilation.map.AnnihilationMap
 import love.chihuyu.annihilation.map.AnnihilationMapManager
 import love.chihuyu.annihilation.map.ProtectedZone
@@ -56,5 +53,8 @@ class AnnihilationPlugin : JavaPlugin() {
         server.pluginManager.registerEvents(PlacedBlockRegistry, this)
         server.pluginManager.registerEvents(NexusHandler, this)
         server.pluginManager.registerEvents(VanillaEventCanceller, this)
+        server.pluginManager.registerEvents(ProtectedZoneHandler, this)
+        server.pluginManager.registerEvents(VanillaMessageHandler, this)
+        server.pluginManager.registerEvents(JoinHandler, this)
     }
 }

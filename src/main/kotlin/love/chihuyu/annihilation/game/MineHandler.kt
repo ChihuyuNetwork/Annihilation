@@ -26,11 +26,6 @@ object MineHandler : Listener {
             return
         }
 
-        if (currentGame != null && currentGame.map.protectedZone.any { block.x in it.minX..it.maxX && block.z in it.minZ..it.maxZ } && player.gameMode != GameMode.CREATIVE) {
-            e.isCancelled = true
-            return
-        }
-
         if (!block.isProperTool(tool.type) && player.gameMode != GameMode.CREATIVE) {
             e.isCancelled = true
             return
@@ -53,6 +48,7 @@ object MineHandler : Listener {
                     return
                 }
                 e.isCancelled = true
+                e.player.itemInHand.durability = e.player.itemInHand.durability.dec()
                 TimerAPI.build(
                     "restore-mine-${System.currentTimeMillis()}",
                     if (block.type == Material.DIAMOND_ORE || block.type == Material.EMERALD_ORE) 40 else 20,

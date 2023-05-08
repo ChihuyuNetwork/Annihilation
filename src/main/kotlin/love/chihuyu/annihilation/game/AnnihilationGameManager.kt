@@ -6,13 +6,13 @@ import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.scoreboard.NameTagVisibility
 import org.bukkit.scoreboard.Team
+import kotlin.math.ceil
 
 object AnnihilationGameManager {
 
     var currentGame: AnnihilationGame? = null
 
     fun start() {
-        initScoreboardTeam()
         currentGame!!.phaseTimer.run()
     }
 
@@ -30,6 +30,7 @@ object AnnihilationGameManager {
         currentGame?.map?.nexusLocations?.forEach { (_, nexus) ->
             nexus.block.type = Material.ENDER_STONE
         }
+        currentGame?.phaseTimer?.kill()
         currentGame = null
     }
 
@@ -49,9 +50,14 @@ object AnnihilationGameManager {
             print("Game hasn't initialized.")
             return
         }
-        AnnihilationPlugin.server.onlinePlayers.chunked(currentGame!!.map.teams.size).forEachIndexed { index, players ->
+
+        initScoreboardTeam()
+
+        val players = AnnihilationPlugin.server.onlinePlayers
+        val teams = currentGame!!.map.teams
+        players.chunked(ceil(players.size.toDouble() / teams.size).toInt()).forEachIndexed { index, chunkedPlayers ->
             val mainScoreboard = AnnihilationPlugin.server.scoreboardManager.mainScoreboard
-            players.forEach { mainScoreboard.getTeam(ChatColor.values()[index].name).addPlayer(it) }
+            chunkedPlayers.forEach { mainScoreboard.getTeam(teams[index].name).addPlayer(it) }
         }
     }
 }
