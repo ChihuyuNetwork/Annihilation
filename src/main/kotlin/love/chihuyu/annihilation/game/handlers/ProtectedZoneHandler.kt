@@ -1,5 +1,6 @@
-package love.chihuyu.annihilation.game
+package love.chihuyu.annihilation.game.handlers
 
+import love.chihuyu.annihilation.game.AnnihilationGameManager
 import org.bukkit.GameMode
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -14,8 +15,7 @@ object ProtectedZoneHandler: Listener {
         val block = e.block
         val player = e.player
         if (
-            currentGame != null &&
-            currentGame.map.protectedZone.any { block.x in it.minX..it.maxX && block.z in it.minZ..it.maxZ } &&
+            currentGame?.map?.protectedZone?.any { block.x in it.minX..it.maxX && block.z in it.minZ..it.maxZ } == true &&
             player.gameMode != GameMode.CREATIVE
             )
         {
@@ -30,8 +30,7 @@ object ProtectedZoneHandler: Listener {
         val block = e.block
         val player = e.player
         if (
-            currentGame != null &&
-            currentGame.map.protectedZone.any { block.x in it.minX..it.maxX && block.z in it.minZ..it.maxZ } &&
+            currentGame?.map?.protectedZone?.any { block.x in it.minX..it.maxX && block.z in it.minZ..it.maxZ } == true &&
             player.gameMode != GameMode.CREATIVE
             )
         {

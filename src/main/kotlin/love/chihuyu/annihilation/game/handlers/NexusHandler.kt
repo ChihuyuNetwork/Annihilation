@@ -1,7 +1,9 @@
-package love.chihuyu.annihilation.game
+package love.chihuyu.annihilation.game.handlers
 
 import love.chihuyu.annihilation.AnnihilationPlugin.Companion.AnnihilationPlugin
 import love.chihuyu.annihilation.AnnihilationPlugin.Companion.prefix
+import love.chihuyu.annihilation.game.AnnihilationGameManager
+import love.chihuyu.annihilation.game.AnnihilationScoreboardManager
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.event.EventHandler

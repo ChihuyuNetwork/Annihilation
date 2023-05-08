@@ -23,7 +23,7 @@ object AnnihilationScoreboardManager {
             scores.add("        ${ChatColor.STRIKETHROUGH}${ChatColor.BOLD}   ${ChatColor.RESET}${ChatColor.BOLD}Nexus${ChatColor.STRIKETHROUGH}${ChatColor.BOLD}   ")
             game.map.teams.forEach { scores.add("${ChatColor.BOLD}${game.nexus[it]} > $it${it.name}") }
             scores.add(" ")
-            scores.add("${ChatColor.BOLD}Phase ${game.currentPhase}${ChatColor.RESET} > ${nextPhase.floorDiv(60)}:${"%02d".format(nextPhase % 60)}")
+            scores.add("${ChatColor.BOLD}Phase ${game.currentPhase.int}${ChatColor.RESET} > ${nextPhase.floorDiv(60)}:${"%02d".format(nextPhase % 60)}")
             scores.add("${ChatColor.BOLD}Map${ChatColor.RESET} > ${ChatColor.GOLD}${ChatColor.BOLD}${game.map.displayName}")
             scores.add("  ")
         }

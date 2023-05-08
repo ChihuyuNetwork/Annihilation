@@ -1,5 +1,6 @@
-package love.chihuyu.annihilation.game
+package love.chihuyu.annihilation.game.handlers
 
+import love.chihuyu.annihilation.game.AnnihilationGameManager
 import love.chihuyu.annihilation.utils.BlockUtils.getFortuneDrops
 import love.chihuyu.annihilation.utils.BlockUtils.isProperTool
 import love.chihuyu.timerapi.TimerAPI
@@ -43,8 +44,8 @@ object MineHandler : Listener {
             Material.LOG,
             Material.MELON_BLOCK
             -> {
-                if (block in PlacedBlockRegistry.blocks || player.gameMode == GameMode.CREATIVE) {
-                    PlacedBlockRegistry.unregister(e)
+                if (block in PlacedBlockHandler.blocks || player.gameMode == GameMode.CREATIVE) {
+                    PlacedBlockHandler.unregister(e)
                     return
                 }
                 e.isCancelled = true

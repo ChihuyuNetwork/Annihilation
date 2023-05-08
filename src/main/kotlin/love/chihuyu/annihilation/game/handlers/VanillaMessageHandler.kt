@@ -1,4 +1,4 @@
-package love.chihuyu.annihilation.game
+package love.chihuyu.annihilation.game.handlers
 
 import love.chihuyu.annihilation.AnnihilationPlugin.Companion.AnnihilationPlugin
 import org.bukkit.ChatColor
