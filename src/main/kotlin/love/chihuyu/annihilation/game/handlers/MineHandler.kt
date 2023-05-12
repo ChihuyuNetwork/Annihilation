@@ -49,7 +49,8 @@ object MineHandler : Listener {
                     return
                 }
                 e.isCancelled = true
-                e.player.itemInHand.durability = e.player.itemInHand.durability.dec()
+                e.player.itemInHand.durability = e.player.itemInHand.durability.dec().dec().dec()
+                if (block.type == Material.DIAMOND_ORE && (currentGame?.currentPhase?.int ?: 0) < 3) return
                 TimerAPI.build(
                     "restore-mine-${System.currentTimeMillis()}",
                     if (block.type == Material.DIAMOND_ORE || block.type == Material.EMERALD_ORE) 40 else 20,
