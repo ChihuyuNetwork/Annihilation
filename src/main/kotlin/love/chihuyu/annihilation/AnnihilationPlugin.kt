@@ -1,6 +1,7 @@
 package love.chihuyu.annihilation
 
 import com.sk89q.worldedit.bukkit.WorldEditPlugin
+import love.chihuyu.annihilation.command.Command
 import love.chihuyu.annihilation.command.impl.MapConfigCommand
 import love.chihuyu.annihilation.command.impl.SetMapCommand
 import love.chihuyu.annihilation.command.impl.ShuffleCommand
@@ -44,18 +45,28 @@ class AnnihilationPlugin : JavaPlugin() {
         saveResource("maps.yml", false)
         AnnihilationMapManager.cache()
 
-        MapConfigCommand.register()
-        SetMapCommand.register()
-        ShuffleCommand.register()
-        StartCommand.register()
+        listOf(
+            MapConfigCommand,
+            SetMapCommand,
+            ShuffleCommand,
+            StartCommand,
+        ).forEach(Command::register)
 
-        server.pluginManager.registerEvents(MineHandler, this)
-        server.pluginManager.registerEvents(PlacedBlockHandler, this)
-        server.pluginManager.registerEvents(NexusHandler, this)
-        server.pluginManager.registerEvents(VanillaEventCanceller, this)
-        server.pluginManager.registerEvents(ProtectedZoneHandler, this)
-        server.pluginManager.registerEvents(VanillaMessageHandler, this)
-        server.pluginManager.registerEvents(JoinHandler, this)
-        server.pluginManager.registerEvents(DeathHandler, this)
+        listOf(
+            CombatLoggerHandler,
+            DeathHandler,
+            EnderFurnaceHandler,
+            JoinHandler,
+            LaunchPadHandler,
+            CombatLoggerHandler,
+            MineHandler,
+            NexusHandler,
+            PlacedBlockHandler,
+            ProtectedZoneHandler,
+            VanillaEventCanceller,
+            VanillaMessageHandler
+        ).forEach {
+            server.pluginManager.registerEvents(it, this)
+        }
     }
 }
