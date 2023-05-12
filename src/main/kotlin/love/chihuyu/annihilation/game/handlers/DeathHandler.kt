@@ -2,6 +2,7 @@ package love.chihuyu.annihilation.game.handlers
 
 import love.chihuyu.annihilation.AnnihilationPlugin.Companion.AnnihilationPlugin
 import love.chihuyu.annihilation.game.AnnihilationGameManager
+import love.chihuyu.timerapi.TimerAPI
 import org.bukkit.ChatColor
 import org.bukkit.Location
 import org.bukkit.event.EventHandler
@@ -22,6 +23,10 @@ object DeathHandler: Listener {
             player.setBedSpawnLocation(Location(player.world, .0, 100.0, .0), true)
         }
 
-        player.spigot().respawn()
+        TimerAPI.build("annihilation-respawn", 10, 1) {
+            end {
+                player.spigot().respawn()
+            }
+        }
     }
 }
