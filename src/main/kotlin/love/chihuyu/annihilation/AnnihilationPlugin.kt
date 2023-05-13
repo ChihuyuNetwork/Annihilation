@@ -6,10 +6,20 @@ import love.chihuyu.annihilation.command.impl.MapConfigCommand
 import love.chihuyu.annihilation.command.impl.SetMapCommand
 import love.chihuyu.annihilation.command.impl.ShuffleCommand
 import love.chihuyu.annihilation.command.impl.StartCommand
-import love.chihuyu.annihilation.game.handlers.*
-import love.chihuyu.annihilation.map.AnnihilationMap
-import love.chihuyu.annihilation.map.AnnihilationMapManager
-import love.chihuyu.annihilation.map.ProtectedZone
+import love.chihuyu.annihilation.game.block.OreRecover
+import love.chihuyu.annihilation.game.block.PlacedBlockHandler
+import love.chihuyu.annihilation.game.block.Protecter
+import love.chihuyu.annihilation.game.combatlogger.EntityManager
+import love.chihuyu.annihilation.game.enderfurnace.InventoryRegistry
+import love.chihuyu.annihilation.game.launchpad.Launcher
+import love.chihuyu.annihilation.game.map.AnnihilationMap
+import love.chihuyu.annihilation.game.map.AnnihilationMapManager
+import love.chihuyu.annihilation.game.map.ProtectedZone
+import love.chihuyu.annihilation.game.misc.SpawnSetter
+import love.chihuyu.annihilation.game.misc.VanillaEventCanceller
+import love.chihuyu.annihilation.game.misc.VanillaMessageEditor
+import love.chihuyu.annihilation.game.nexus.NexusHandler
+import love.chihuyu.annihilation.game.scoreboard.UpdateJoiner
 import org.bukkit.ChatColor
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.configuration.serialization.ConfigurationSerialization
@@ -53,18 +63,18 @@ class AnnihilationPlugin : JavaPlugin() {
         ).forEach(Command::register)
 
         listOf(
-            CombatLoggerHandler,
-            DeathHandler,
-            EnderFurnaceHandler,
-            JoinHandler,
-            LaunchPadHandler,
-            CombatLoggerHandler,
-            MineHandler,
+            EntityManager,
+            SpawnSetter,
+            InventoryRegistry,
+            UpdateJoiner,
+            Launcher,
+            EntityManager,
+            OreRecover,
             NexusHandler,
             PlacedBlockHandler,
-            ProtectedZoneHandler,
+            Protecter,
             VanillaEventCanceller,
-            VanillaMessageHandler
+            VanillaMessageEditor
         ).forEach {
             server.pluginManager.registerEvents(it, this)
         }

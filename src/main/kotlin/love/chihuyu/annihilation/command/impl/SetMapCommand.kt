@@ -4,7 +4,7 @@ import love.chihuyu.annihilation.AnnihilationPlugin.Companion.prefix
 import love.chihuyu.annihilation.command.Command
 import love.chihuyu.annihilation.game.AnnihilationGame
 import love.chihuyu.annihilation.game.AnnihilationGameManager
-import love.chihuyu.annihilation.map.AnnihilationMapManager
+import love.chihuyu.annihilation.game.map.AnnihilationMapManager
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 

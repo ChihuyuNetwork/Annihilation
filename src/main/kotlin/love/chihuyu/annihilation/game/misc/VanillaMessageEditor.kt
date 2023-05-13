@@ -1,4 +1,4 @@
-package love.chihuyu.annihilation.game.handlers
+package love.chihuyu.annihilation.game.misc
 
 import love.chihuyu.annihilation.AnnihilationPlugin.Companion.AnnihilationPlugin
 import org.bukkit.ChatColor
@@ -6,7 +6,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
 
-object VanillaMessageHandler: Listener {
+object VanillaMessageEditor: Listener {
 
     @EventHandler
     fun onKill(e: PlayerDeathEvent) {

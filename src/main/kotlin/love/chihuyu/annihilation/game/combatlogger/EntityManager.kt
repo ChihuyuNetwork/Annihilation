@@ -1,5 +1,6 @@
-package love.chihuyu.annihilation.game.handlers
+package love.chihuyu.annihilation.game.combatlogger
 
+import love.chihuyu.timerapi.TimerAPI
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -8,7 +9,7 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import java.util.*
 
-object CombatLoggerHandler: Listener {
+object EntityManager: Listener {
 
     private val combatLoggers = mutableMapOf<UUID, Player>()
 
@@ -20,6 +21,10 @@ object CombatLoggerHandler: Listener {
         logger.health = .5
         logger.inventory.contents = player.inventory.contents
         combatLoggers[player.uniqueId] = logger
+
+        TimerAPI.build("combatlogger-autoremove", 15, 20) {
+            if (!logger.isDead) logger.remove()
+        }
     }
 
     @EventHandler

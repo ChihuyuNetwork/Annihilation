@@ -1,4 +1,4 @@
-package love.chihuyu.annihilation.game.handlers
+package love.chihuyu.annihilation.game.block
 
 import love.chihuyu.annihilation.game.AnnihilationGameManager
 import love.chihuyu.annihilation.utils.BlockUtils.getFortuneDrops
@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack
 import kotlin.random.Random
 import kotlin.random.nextInt
 
-object MineHandler : Listener {
+object OreRecover : Listener {
 
     @EventHandler
     fun onMine(e: BlockBreakEvent) {
@@ -44,10 +44,6 @@ object MineHandler : Listener {
             Material.LOG,
             Material.MELON_BLOCK
             -> {
-                if (block in PlacedBlockHandler.blocks || player.gameMode == GameMode.CREATIVE) {
-                    PlacedBlockHandler.unregister(e)
-                    return
-                }
                 e.isCancelled = true
                 e.player.itemInHand.durability = e.player.itemInHand.durability.dec().dec().dec()
                 if (block.type == Material.DIAMOND_ORE && (currentGame?.currentPhase?.int ?: 0) < 3) return

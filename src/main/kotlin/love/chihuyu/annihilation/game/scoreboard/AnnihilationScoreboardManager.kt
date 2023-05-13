@@ -1,6 +1,7 @@
-package love.chihuyu.annihilation.game
+package love.chihuyu.annihilation.game.scoreboard
 
 import love.chihuyu.annihilation.AnnihilationPlugin.Companion.AnnihilationPlugin
+import love.chihuyu.annihilation.game.AnnihilationGame
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import org.bukkit.scoreboard.DisplaySlot

@@ -1,4 +1,4 @@
-package love.chihuyu.annihilation.game.handlers
+package love.chihuyu.annihilation.game.enderfurnace
 
 import love.chihuyu.annihilation.game.AnnihilationGameManager
 import org.bukkit.Bukkit
@@ -10,7 +10,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.Inventory
 import java.util.*
 
-object EnderFurnaceHandler: Listener {
+object InventoryRegistry: Listener {
 
     private val enderFurnaces = mutableMapOf<UUID, Inventory>()
 

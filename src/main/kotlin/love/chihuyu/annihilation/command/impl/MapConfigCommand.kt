@@ -4,9 +4,9 @@ import love.chihuyu.annihilation.AnnihilationPlugin.Companion.AnnihilationPlugin
 import love.chihuyu.annihilation.AnnihilationPlugin.Companion.WorldEditAPI
 import love.chihuyu.annihilation.AnnihilationPlugin.Companion.prefix
 import love.chihuyu.annihilation.command.Command
-import love.chihuyu.annihilation.map.AnnihilationMap
-import love.chihuyu.annihilation.map.AnnihilationMapManager
-import love.chihuyu.annihilation.map.ProtectedZone
+import love.chihuyu.annihilation.game.map.AnnihilationMap
+import love.chihuyu.annihilation.game.map.AnnihilationMapManager
+import love.chihuyu.annihilation.game.map.ProtectedZone
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.command.CommandSender

@@ -1,4 +1,4 @@
-package love.chihuyu.annihilation.game.handlers
+package love.chihuyu.annihilation.game.misc
 
 import org.bukkit.Material
 import org.bukkit.event.EventHandler

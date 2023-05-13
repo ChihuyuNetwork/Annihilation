@@ -1,15 +1,14 @@
-package love.chihuyu.annihilation.game.handlers
+package love.chihuyu.annihilation.game.misc
 
 import love.chihuyu.annihilation.AnnihilationPlugin.Companion.AnnihilationPlugin
 import love.chihuyu.annihilation.game.AnnihilationGameManager
-import love.chihuyu.timerapi.TimerAPI
 import org.bukkit.ChatColor
 import org.bukkit.Location
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
 
-object DeathHandler: Listener {
+object SpawnSetter: Listener {
 
     @EventHandler
     fun onDeath(e: PlayerDeathEvent) {
@@ -21,12 +20,6 @@ object DeathHandler: Listener {
             player.setBedSpawnLocation(currentGame.map.spawns[ChatColor.valueOf(mainboard.getPlayerTeam(player).name)]?.random(), true)
         } else {
             player.setBedSpawnLocation(Location(player.world, .0, 100.0, .0), true)
-        }
-
-        TimerAPI.build("annihilation-respawn", 10, 1) {
-            end {
-                player.spigot().respawn()
-            }
         }
     }
 }

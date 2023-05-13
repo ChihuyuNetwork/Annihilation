@@ -1,4 +1,4 @@
-package love.chihuyu.annihilation.game.handlers
+package love.chihuyu.annihilation.game.block
 
 import love.chihuyu.annihilation.game.AnnihilationGameManager
 import org.bukkit.GameMode
@@ -7,7 +7,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 
-object ProtectedZoneHandler: Listener {
+object Protecter: Listener {
 
     @EventHandler
     fun onBreak(e: BlockBreakEvent) {
@@ -25,7 +25,7 @@ object ProtectedZoneHandler: Listener {
     }
 
     @EventHandler
-    fun onBreak(e: BlockPlaceEvent) {
+    fun onPlace(e: BlockPlaceEvent) {
         val currentGame = AnnihilationGameManager.currentGame
         val block = e.block
         val player = e.player

@@ -1,4 +1,4 @@
-package love.chihuyu.annihilation.map
+package love.chihuyu.annihilation.game.map
 
 import love.chihuyu.annihilation.AnnihilationPlugin.Companion.AnnihilationMapConfig
 import love.chihuyu.annihilation.AnnihilationPlugin.Companion.AnnihilationPlugin

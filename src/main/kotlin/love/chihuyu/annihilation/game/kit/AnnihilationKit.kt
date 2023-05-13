@@ -1,4 +1,4 @@
-package love.chihuyu.annihilation.kit
+package love.chihuyu.annihilation.game.kit
 
 /**
  * Miner
