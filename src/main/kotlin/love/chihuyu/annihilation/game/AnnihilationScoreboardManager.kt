@@ -1,7 +1,6 @@
-package love.chihuyu.annihilation.game.scoreboard
+package love.chihuyu.annihilation.game
 
 import love.chihuyu.annihilation.AnnihilationPlugin.Companion.AnnihilationPlugin
-import love.chihuyu.annihilation.game.AnnihilationGame
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import org.bukkit.scoreboard.DisplaySlot
@@ -9,8 +8,9 @@ import org.bukkit.scoreboard.Objective
 
 object AnnihilationScoreboardManager {
 
-    fun update(player: Player, game: AnnihilationGame?) {
+    fun update(player: Player) {
         val mainboard = AnnihilationPlugin.server.scoreboardManager.mainScoreboard
+        val game = AnnihilationGameManager.currentGame
         mainboard.objectives.forEach(Objective::unregister)
 
         val title = "annihilation"
@@ -38,7 +38,5 @@ object AnnihilationScoreboardManager {
         player.scoreboard = mainboard
     }
 
-    fun updateAll(game: AnnihilationGame?) {
-        AnnihilationPlugin.server.onlinePlayers.forEach { update(it, game) }
-    }
+    fun updateAll() = AnnihilationPlugin.server.onlinePlayers.forEach { update(it) }
 }

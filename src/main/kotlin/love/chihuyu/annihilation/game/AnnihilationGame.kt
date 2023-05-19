@@ -2,8 +2,7 @@ package love.chihuyu.annihilation.game
 
 import love.chihuyu.annihilation.AnnihilationPlugin.Companion.AnnihilationPlugin
 import love.chihuyu.annihilation.AnnihilationPlugin.Companion.prefix
-import love.chihuyu.annihilation.game.map.AnnihilationMap
-import love.chihuyu.annihilation.game.scoreboard.AnnihilationScoreboardManager
+import love.chihuyu.annihilation.map.AnnihilationMap
 import love.chihuyu.timerapi.TimerAPI
 import love.chihuyu.timerapi.timer.Timer
 import org.bukkit.ChatColor
@@ -30,8 +29,8 @@ class AnnihilationGame(
             )
         }
         tick {
-            AnnihilationScoreboardManager.updateAll(this@AnnihilationGame)
-            
+            AnnihilationScoreboardManager.updateAll()
+
             when (elapsed) {
                 600L -> {
                     currentPhase = Phase.SECOND

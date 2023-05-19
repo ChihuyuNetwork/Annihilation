@@ -1,4 +1,4 @@
-package love.chihuyu.annihilation.game.misc
+package love.chihuyu.annihilation.listener
 
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
@@ -7,20 +7,20 @@ import org.bukkit.event.block.LeavesDecayEvent
 import org.bukkit.event.entity.EntityChangeBlockEvent
 import org.bukkit.event.weather.WeatherChangeEvent
 
-object VanillaEventCanceller : Listener {
+object CancelListener : Listener {
 
     @EventHandler
-    fun onLeave(e: LeavesDecayEvent) {
+    private fun onLeaveDecay(e: LeavesDecayEvent) {
         e.isCancelled = true
     }
 
     @EventHandler
-    fun onWeather(e: WeatherChangeEvent) {
+    private fun onWeatherChange(e: WeatherChangeEvent) {
         e.isCancelled = true
     }
 
     @EventHandler
-    fun onFarm(e: EntityChangeBlockEvent) {
+    private fun onFarmlandBreak(e: EntityChangeBlockEvent) {
         e.isCancelled = e.block.type == Material.SOIL
     }
 }

@@ -4,16 +4,16 @@ import love.chihuyu.annihilation.AnnihilationPlugin.Companion.AnnihilationPlugin
 import love.chihuyu.annihilation.AnnihilationPlugin.Companion.WorldEditAPI
 import love.chihuyu.annihilation.AnnihilationPlugin.Companion.prefix
 import love.chihuyu.annihilation.command.Command
-import love.chihuyu.annihilation.game.map.AnnihilationMap
-import love.chihuyu.annihilation.game.map.AnnihilationMapManager
-import love.chihuyu.annihilation.game.map.ProtectedZone
+import love.chihuyu.annihilation.map.AnnihilationMap
+import love.chihuyu.annihilation.map.AnnihilationMapManager
+import love.chihuyu.annihilation.map.ProtectedZone
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import kotlin.math.roundToInt
 
-object MapConfigCommand: Command("mapconfig") {
+object MapConfigCommand : Command("mapconfig") {
     override fun onCommand(sender: CommandSender, label: String, args: Array<out String>) {
         if (sender !is Player || args.isEmpty()) return
 
@@ -68,22 +68,26 @@ object MapConfigCommand: Command("mapconfig") {
                 if (args.size < 3) return
                 val map = AnnihilationMapManager.cachedMaps[args[1]]!!
                 val team = ChatColor.valueOf(args[2])
-                map.spawns[team] = (map.spawns[team] ?: mutableListOf()).plus(sender.location.apply {
-                    x = x.roundToInt().toDouble()
-                    y = y.roundToInt().toDouble()
-                    z = z.roundToInt().toDouble()
-                }).toMutableList()
+                map.spawns[team] = (map.spawns[team] ?: mutableListOf()).plus(
+                    sender.location.apply {
+                        x = x.roundToInt().toDouble()
+                        y = y.roundToInt().toDouble()
+                        z = z.roundToInt().toDouble()
+                    }
+                ).toMutableList()
                 sender.sendMessage("$prefix Map edited: added spawn")
             }
             "remove-spawn" -> {
                 if (args.size < 3) return
                 val map = AnnihilationMapManager.cachedMaps[args[1]]!!
                 val team = ChatColor.valueOf(args[2])
-                map.spawns[team] = (map.spawns[team] ?: mutableListOf()).minus(sender.location.apply {
-                    x = x.roundToInt().toDouble()
-                    y = y.roundToInt().toDouble()
-                    z = z.roundToInt().toDouble()
-                }).toMutableList()
+                map.spawns[team] = (map.spawns[team] ?: mutableListOf()).minus(
+                    sender.location.apply {
+                        x = x.roundToInt().toDouble()
+                        y = y.roundToInt().toDouble()
+                        z = z.roundToInt().toDouble()
+                    }
+                ).toMutableList()
                 sender.sendMessage("$prefix Map edited: removed spawn")
             }
             "add-protectedzone" -> {

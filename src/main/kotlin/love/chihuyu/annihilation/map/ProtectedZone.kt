@@ -1,4 +1,4 @@
-package love.chihuyu.annihilation.game.map
+package love.chihuyu.annihilation.map
 
 import org.bukkit.configuration.serialization.ConfigurationSerializable
 
@@ -7,7 +7,7 @@ class ProtectedZone(val minX: Int, val maxX: Int, val minZ: Int, val maxZ: Int) 
         map["minX"].toString().toInt(),
         map["maxX"].toString().toInt(),
         map["minZ"].toString().toInt(),
-        map["maxZ"].toString().toInt(),
+        map["maxZ"].toString().toInt()
     )
 
     override fun serialize(): MutableMap<String, Any> {
@@ -15,7 +15,7 @@ class ProtectedZone(val minX: Int, val maxX: Int, val minZ: Int, val maxZ: Int) 
             "minX" to minX,
             "maxX" to maxX,
             "minZ" to minZ,
-            "maxZ" to maxZ,
+            "maxZ" to maxZ
         )
     }
 }

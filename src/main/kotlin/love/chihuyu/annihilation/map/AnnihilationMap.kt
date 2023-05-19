@@ -1,4 +1,4 @@
-package love.chihuyu.annihilation.game.map
+package love.chihuyu.annihilation.map
 
 import org.bukkit.ChatColor
 import org.bukkit.Location

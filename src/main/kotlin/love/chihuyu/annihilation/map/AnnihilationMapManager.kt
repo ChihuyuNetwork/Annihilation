@@ -1,9 +1,8 @@
-package love.chihuyu.annihilation.game.map
+package love.chihuyu.annihilation.map
 
 import love.chihuyu.annihilation.AnnihilationPlugin.Companion.AnnihilationMapConfig
 import love.chihuyu.annihilation.AnnihilationPlugin.Companion.AnnihilationPlugin
 import love.chihuyu.annihilation.AnnihilationPlugin.Companion.mapFile
-
 
 object AnnihilationMapManager {
 
