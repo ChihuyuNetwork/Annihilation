@@ -3,6 +3,7 @@ package love.chihuyu.annihilation.game
 import love.chihuyu.annihilation.AnnihilationPlugin.Companion.AnnihilationPlugin
 import love.chihuyu.annihilation.AnnihilationPlugin.Companion.prefix
 import love.chihuyu.annihilation.map.AnnihilationMap
+import love.chihuyu.annihilation.utils.ScoreboardUtils
 import love.chihuyu.timerapi.TimerAPI
 import love.chihuyu.timerapi.timer.Timer
 import org.bukkit.ChatColor
@@ -29,7 +30,7 @@ class AnnihilationGame(
             )
         }
         tick {
-            AnnihilationScoreboardManager.updateAll()
+            ScoreboardUtils.updateAll()
 
             when (elapsed) {
                 600L -> {

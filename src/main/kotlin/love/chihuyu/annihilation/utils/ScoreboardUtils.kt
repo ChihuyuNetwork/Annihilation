@@ -1,12 +1,13 @@
-package love.chihuyu.annihilation.game
+package love.chihuyu.annihilation.utils
 
 import love.chihuyu.annihilation.AnnihilationPlugin.Companion.AnnihilationPlugin
+import love.chihuyu.annihilation.game.AnnihilationGameManager
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import org.bukkit.scoreboard.DisplaySlot
 import org.bukkit.scoreboard.Objective
 
-object AnnihilationScoreboardManager {
+object ScoreboardUtils {
 
     fun update(player: Player) {
         val mainboard = AnnihilationPlugin.server.scoreboardManager.mainScoreboard

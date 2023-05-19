@@ -3,9 +3,9 @@ package love.chihuyu.annihilation.listener
 import love.chihuyu.annihilation.AnnihilationPlugin.Companion.AnnihilationPlugin
 import love.chihuyu.annihilation.AnnihilationPlugin.Companion.prefix
 import love.chihuyu.annihilation.game.AnnihilationGameManager
-import love.chihuyu.annihilation.game.AnnihilationScoreboardManager
 import love.chihuyu.annihilation.utils.BlockUtils.getFortuneDrops
 import love.chihuyu.annihilation.utils.BlockUtils.isProperTool
+import love.chihuyu.annihilation.utils.ScoreboardUtils
 import love.chihuyu.timerapi.TimerAPI
 import org.bukkit.*
 import org.bukkit.block.Block
@@ -41,7 +41,7 @@ object AnnihilationListener : Listener {
     @EventHandler
     private fun updateScoreboard(e: PlayerJoinEvent) {
         val player = e.player
-        AnnihilationScoreboardManager.update(player)
+        ScoreboardUtils.update(player)
     }
 
     @EventHandler
@@ -57,7 +57,7 @@ object AnnihilationListener : Listener {
 
         currentGame.nexus[team] = currentGame.nexus[team]!!.dec()
         AnnihilationPlugin.server.broadcastMessage("$prefix ${mainScoreboard.getPlayerTeam(player).prefix}${player.displayName}${ChatColor.RESET} attacked ${team}Nexus (${currentGame.nexus[team]})")
-        AnnihilationPlugin.server.onlinePlayers.forEach { AnnihilationScoreboardManager.update(it) }
+        AnnihilationPlugin.server.onlinePlayers.forEach { ScoreboardUtils.update(it) }
         if (currentGame.nexus[team] == 0) {
             block.type = Material.BEDROCK
             AnnihilationPlugin.server.broadcastMessage("$prefix ${team}${mainScoreboard.getTeam(team.name).name}${ChatColor.RESET} Destroyed")
