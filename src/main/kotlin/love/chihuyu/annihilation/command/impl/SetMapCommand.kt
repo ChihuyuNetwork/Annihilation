@@ -16,5 +16,5 @@ object SetMapCommand : Command("setmap") {
         sender.sendMessage("$prefix ${ChatColor.RESET}Map changed")
     }
 
-    override fun onTabComplete(sender: CommandSender, label: String, args: Array<out String>): List<String> = emptyList()
+    override fun onTabComplete(sender: CommandSender, label: String, args: Array<out String>): List<String> = AnnihilationMapManager.cachedMaps.map { it.key }
 }
