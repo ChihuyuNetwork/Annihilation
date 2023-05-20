@@ -5,10 +5,12 @@ import love.chihuyu.annihilation.AnnihilationPlugin.Companion.prefix
 import love.chihuyu.annihilation.game.AnnihilationGameManager
 import love.chihuyu.annihilation.utils.BlockUtils.getFortuneDrops
 import love.chihuyu.annihilation.utils.BlockUtils.isProperTool
+import love.chihuyu.annihilation.utils.ItemUtils
 import love.chihuyu.annihilation.utils.ScoreboardUtils
 import love.chihuyu.timerapi.TimerAPI
 import org.bukkit.*
 import org.bukkit.block.Block
+import org.bukkit.block.Sign
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -16,10 +18,9 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.PlayerDeathEvent
+import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
-import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.event.player.PlayerJoinEvent
-import org.bukkit.event.player.PlayerQuitEvent
+import org.bukkit.event.player.*
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import java.util.*
@@ -30,6 +31,171 @@ object AnnihilationListener : Listener {
     private val placedBlocks = mutableListOf<Block>()
     private val combatLoggers = mutableMapOf<UUID, Player>()
     private val enderFurnaces = mutableMapOf<UUID, Inventory>()
+
+    @EventHandler
+    private fun teamPrivatedChat(e: AsyncPlayerChatEvent) {
+        val player = e.player
+
+        if (e.message[0] == '!') {
+            e.format = "${ChatColor.DARK_PURPLE}[G]${ChatColor.RESET} ${player.name}: ${e.message}"
+        } else {
+            val team = AnnihilationPlugin.server.scoreboardManager.mainScoreboard.getPlayerTeam(player)
+            e.format = "${ChatColor.valueOf(team.name)}[${team.name[0].uppercase()}]${ChatColor.RESET} ${player.name}: ${e.message}"
+            e.recipients.clear()
+            team.entries.map { Bukkit.getOfflinePlayer(it) }.forEach { if (it.isOnline) e.recipients.add(it as Player) }
+        }
+    }
+
+    @EventHandler
+    private fun handleShop(e: InventoryClickEvent) {
+        val player = e.whoClicked
+        val inv = e.inventory ?: return
+        if (inv.size != 18) return
+
+        e.isCancelled = true
+
+        val item = e.currentItem ?: return
+        if (!item.itemMeta.hasLore()) return
+        var remainCost = Integer.parseInt(item.itemMeta.lore[0].split(" ")[0].split("f")[1])
+
+        if (player.inventory.contains(Material.GOLD_INGOT)) {
+            if (player.inventory.filterNotNull().filter { it.type == Material.GOLD_INGOT }.sumOf { it.amount } < remainCost) {
+                player.sendMessage("$prefix ${ChatColor.RED}You don't have enough golds!")
+                return
+            }
+            player.inventory.filterNotNull().filter { it.type == Material.GOLD_INGOT }.forEach {
+                if (remainCost == 0) return@forEach
+                if (it.amount <= remainCost) {
+                    remainCost -= it.amount
+                    player.inventory.remove(it)
+                } else {
+                    it.amount = it.amount - remainCost
+                    remainCost = 0
+                }
+            }
+            player.inventory.addItem(item).forEach {
+                player.world.dropItemNaturally(player.location, it.value)
+            }
+        }
+    }
+
+    @EventHandler
+    private fun openShop(e: PlayerInteractEvent) {
+        val player = e.player
+        val block = e.clickedBlock
+        val state = block.state as? Sign ?: return
+        when (state.getLine(1)) {
+            "[Item Shop]" -> {
+                player.openInventory(Bukkit.createInventory(null, 18, "Item Shop").apply {
+                    setItem(1, ItemUtils.createSkull("${ChatColor.DARK_PURPLE}${ChatColor.BOLD}poti336", lore = listOf("${ChatColor.WHITE}64 Gold"), owner = "poti336"))
+                    setItem(2, ItemUtils.create(Material.IRON_SWORD, lore = listOf("${ChatColor.WHITE}5 Gold")))
+                    setItem(3, ItemUtils.create(Material.IRON_HELMET, lore = listOf("${ChatColor.WHITE}3 Gold")))
+                    setItem(4, ItemUtils.create(Material.IRON_CHESTPLATE, lore = listOf("${ChatColor.WHITE}6 Gold")))
+                    setItem(5, ItemUtils.create(Material.IRON_LEGGINGS, lore = listOf("${ChatColor.WHITE}4 Gold")))
+                    setItem(6, ItemUtils.create(Material.IRON_BOOTS, lore = listOf("${ChatColor.WHITE}3 Gold")))
+                    setItem(7, ItemUtils.create(Material.ENDER_PEARL, lore = listOf("${ChatColor.WHITE}32 Gold")))
+
+                    setItem(11, ItemUtils.create(Material.CAKE, lore = listOf("${ChatColor.WHITE}1 Gold")))
+                    setItem(12, ItemUtils.create(Material.BOW, lore = listOf("${ChatColor.WHITE}1 Gold")))
+                    setItem(13, ItemUtils.create(Material.ARROW, lore = listOf("${ChatColor.WHITE}5 Gold"), amount = 16))
+                    setItem(14, ItemUtils.create(Material.BOOK, lore = listOf("${ChatColor.WHITE}5 Gold")))
+                    setItem(15, ItemUtils.create(Material.RAW_BEEF, lore = listOf("${ChatColor.WHITE}1 Gold")))
+                    setItem(16, ItemUtils.create(Material.MILK_BUCKET, lore = listOf("${ChatColor.WHITE}5 Gold")))
+                })
+            }
+            "[Potion Shop]" -> {
+                player.openInventory(Bukkit.createInventory(null, 18, "Potion Shop").apply {
+                    setItem(2, ItemUtils.create(Material.POTION, lore = listOf("${ChatColor.WHITE}1 Gold")))
+                    setItem(3, ItemUtils.create(Material.SPECKLED_MELON, lore = listOf("${ChatColor.WHITE}2 Gold")))
+                    setItem(4, ItemUtils.create(Material.FERMENTED_SPIDER_EYE, lore = listOf("${ChatColor.WHITE}3 Gold")))
+                    setItem(5, ItemUtils.create(Material.GOLDEN_CARROT, lore = listOf("${ChatColor.WHITE}3 Gold")))
+                    setItem(6, ItemUtils.create(Material.REDSTONE, lore = listOf("${ChatColor.WHITE}1 Gold")))
+
+                    setItem(11, ItemUtils.create(Material.BREWING_STAND_ITEM, lore = listOf("${ChatColor.WHITE}10 Gold")))
+                    setItem(12, ItemUtils.create(Material.SUGAR, lore = listOf("${ChatColor.WHITE}2 Gold")))
+                    setItem(13, ItemUtils.create(Material.GHAST_TEAR, lore = listOf("${ChatColor.WHITE}15 Gold")))
+                    setItem(14, ItemUtils.create(Material.MAGMA_CREAM, lore = listOf("${ChatColor.WHITE}2 Gold")))
+                    if ((AnnihilationGameManager.currentGame?.currentPhase?.int ?: 0) > 3) setItem(15, ItemUtils.create(Material.BLAZE_POWDER, lore = listOf("${ChatColor.WHITE}15 Gold")))
+                })
+            }
+        }
+    }
+
+    @EventHandler
+    private fun removeSoulboundOnDeath(e: PlayerDeathEvent) {
+        val player = e.entity
+        player.inventory.removeAll {
+            "${ChatColor.GOLD}Soulbound" in it.itemMeta.lore
+        }
+    }
+
+    @EventHandler
+    private fun giveSoulbound(e: PlayerRespawnEvent) {
+        if (AnnihilationGameManager.currentGame == null) return
+        val player = e.player
+        val team = AnnihilationPlugin.server.scoreboardManager.mainScoreboard.getPlayerTeam(player)
+        val colorMap = mapOf(
+            ChatColor.RED to Color.RED,
+            ChatColor.GOLD to Color.ORANGE,
+            ChatColor.DARK_RED to Color.MAROON,
+            ChatColor.AQUA to Color.AQUA,
+            ChatColor.BLUE to Color.NAVY,
+            ChatColor.GREEN to Color.GREEN,
+            ChatColor.DARK_AQUA to Color.TEAL,
+            ChatColor.WHITE to Color.WHITE,
+            ChatColor.GRAY to Color.SILVER,
+            ChatColor.YELLOW to Color.YELLOW,
+            ChatColor.BLACK to Color.BLACK,
+            ChatColor.DARK_GRAY to Color.GRAY,
+            ChatColor.DARK_BLUE to Color.BLUE,
+            ChatColor.DARK_GREEN to Color.OLIVE,
+            ChatColor.DARK_PURPLE to Color.PURPLE,
+            ChatColor.LIGHT_PURPLE to Color.FUCHSIA,
+        )
+
+        player.inventory.helmet = ItemUtils.createLeatherArmor(
+            Material.LEATHER_HELMET,
+            lore = listOf("${ChatColor.GOLD}Soulbound"),
+            unbreakable = true,
+            color = colorMap[ChatColor.valueOf(team.name)]
+        )
+        player.inventory.chestplate = ItemUtils.createLeatherArmor(
+            Material.LEATHER_CHESTPLATE,
+            lore = listOf("${ChatColor.GOLD}Soulbound"),
+            unbreakable = true,
+            color = colorMap[ChatColor.valueOf(team.name)]
+        )
+        player.inventory.leggings = ItemUtils.createLeatherArmor(
+            Material.LEATHER_LEGGINGS,
+            lore = listOf("${ChatColor.GOLD}Soulbound"),
+            unbreakable = true,
+            color = colorMap[ChatColor.valueOf(team.name)]
+        )
+        player.inventory.boots = ItemUtils.createLeatherArmor(
+            Material.LEATHER_BOOTS,
+            lore = listOf("${ChatColor.GOLD}Soulbound"),
+            unbreakable = true,
+            color = colorMap[ChatColor.valueOf(team.name)]
+        )
+        player.inventory.addItem(
+            ItemUtils.create(
+                Material.WOOD_SWORD,
+                lore = listOf("${ChatColor.GOLD}Soulbound")
+            ),
+            ItemUtils.create(
+                Material.STONE_PICKAXE,
+                lore = listOf("${ChatColor.GOLD}Soulbound")
+            ),
+            ItemUtils.create(
+                Material.STONE_AXE,
+                lore = listOf("${ChatColor.GOLD}Soulbound")
+            ),
+            ItemUtils.create(
+                Material.STONE_SPADE,
+                lore = listOf("${ChatColor.GOLD}Soulbound")
+            ),
+        )
+    }
 
     @EventHandler
     private fun autoTeamOnJoin(e: PlayerJoinEvent) {
@@ -112,15 +278,16 @@ object AnnihilationListener : Listener {
 
     @EventHandler
     private fun openOrCreateEnderfurnace(e: PlayerInteractEvent) {
-        val block = e.clickedBlock
+        val block = e.clickedBlock ?: return
         val player = e.player
         val furnace = enderFurnaces[player.uniqueId]
-        val currentGame = AnnihilationGameManager.currentGame
+        val currentGame = AnnihilationGameManager.currentGame ?: return
 
-        if (block.type == Material.FURNACE && currentGame != null && block.location in currentGame.map.enderFurnaces) {
+        if (block.type == Material.FURNACE) {
+            if (block.location !in currentGame.map.enderFurnaces) return
+            e.isCancelled = true
             val inventory = enderFurnaces[player.uniqueId] ?: Bukkit.createInventory(player, InventoryType.FURNACE, "Ender Furnace")
             if (furnace == null) enderFurnaces[player.uniqueId] = inventory
-            e.isCancelled = true
             player.openInventory(inventory)
         }
     }
