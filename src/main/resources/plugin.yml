@@ -13,6 +13,8 @@ commands:
     permission: annihilation.command.anni-start
   mapconfig:
     permission: annihilation.command.mapconfig
+  kill:
+    permission: annihilation.command.kill
 permissions:
   annihilation.command.*:
     children:
@@ -20,6 +22,7 @@ permissions:
       annihilation.command.setmap: true
       annihilation.command.anni-start: true
       annihilation.command.mapconfig: true
+      annihilation.command.kill: true
   annihilation.command.shuffle:
     default: op
   annihilation.command.setmap:
@@ -28,3 +31,5 @@ permissions:
     default: op
   annihilation.command.mapconfig:
     default: op
+  annihilation.command.kill:
+    default: true

@@ -2,10 +2,7 @@ package love.chihuyu.annihilation
 
 import com.sk89q.worldedit.bukkit.WorldEditPlugin
 import love.chihuyu.annihilation.command.Command
-import love.chihuyu.annihilation.command.impl.MapConfigCommand
-import love.chihuyu.annihilation.command.impl.SetMapCommand
-import love.chihuyu.annihilation.command.impl.ShuffleCommand
-import love.chihuyu.annihilation.command.impl.StartCommand
+import love.chihuyu.annihilation.command.impl.*
 import love.chihuyu.annihilation.listener.AnnihilationListener
 import love.chihuyu.annihilation.listener.CancelListener
 import love.chihuyu.annihilation.map.AnnihilationMap
@@ -19,7 +16,7 @@ import java.io.File
 
 class AnnihilationPlugin : JavaPlugin() {
     companion object {
-        val prefix = "${ChatColor.GOLD}[Anni]"
+        val prefix = "${ChatColor.GOLD}[Anni]${ChatColor.RESET}"
         lateinit var mapFile: File
         lateinit var AnnihilationPlugin: JavaPlugin
         lateinit var AnnihilationMapConfig: YamlConfiguration
@@ -49,7 +46,8 @@ class AnnihilationPlugin : JavaPlugin() {
             MapConfigCommand,
             SetMapCommand,
             ShuffleCommand,
-            StartCommand
+            StartCommand,
+            KillCommand
         ).forEach(Command::register)
 
         listOf(
