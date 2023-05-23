@@ -8,6 +8,7 @@ import love.chihuyu.annihilation.utils.BlockUtils.isProperTool
 import love.chihuyu.annihilation.utils.ItemUtils
 import love.chihuyu.annihilation.utils.ScoreboardUtils
 import love.chihuyu.timerapi.TimerAPI
+import net.citizensnpcs.api.CitizensAPI
 import org.bukkit.*
 import org.bukkit.block.Block
 import org.bukkit.block.Sign
@@ -29,17 +30,16 @@ import kotlin.random.nextInt
 
 object AnnihilationListener : Listener {
     private val placedBlocks = mutableListOf<Block>()
-    private val combatLoggers = mutableMapOf<UUID, Player>()
     private val enderFurnaces = mutableMapOf<UUID, Inventory>()
 
     @EventHandler
     private fun teamPrivatedChat(e: AsyncPlayerChatEvent) {
         val player = e.player
+        val team = AnnihilationPlugin.server.scoreboardManager.mainScoreboard.getPlayerTeam(player)
 
         if (e.message[0] == '!') {
-            e.format = "${ChatColor.DARK_PURPLE}[G]${ChatColor.RESET} ${player.name}: ${e.message}"
+            e.format = "${ChatColor.DARK_PURPLE}[${team.name[0].uppercase()}]${ChatColor.RESET} ${player.name}: ${e.message}".removePrefix("!")
         } else {
-            val team = AnnihilationPlugin.server.scoreboardManager.mainScoreboard.getPlayerTeam(player)
             e.format = "${ChatColor.valueOf(team.name)}[${team.name[0].uppercase()}]${ChatColor.RESET} ${player.name}: ${e.message}"
             e.recipients.clear()
             team.entries.map { Bukkit.getOfflinePlayer(it) }.forEach { if (it.isOnline) e.recipients.add(it as Player) }
@@ -82,7 +82,7 @@ object AnnihilationListener : Listener {
     @EventHandler
     private fun openShop(e: PlayerInteractEvent) {
         val player = e.player
-        val block = e.clickedBlock
+        val block = e.clickedBlock ?: return
         val state = block.state as? Sign ?: return
         when (state.getLine(1)) {
             "[Item Shop]" -> {
@@ -122,11 +122,18 @@ object AnnihilationListener : Listener {
     }
 
     @EventHandler
+    private fun removeSoulboundOnDrop(e: PlayerDropItemEvent) {
+        val item = e.itemDrop
+
+        if ("${ChatColor.GOLD}Soulbound" in item.itemStack.itemMeta.lore) item.remove()
+    }
+
+    @EventHandler
     private fun removeSoulboundOnDeath(e: PlayerDeathEvent) {
         val player = e.entity
-        player.inventory.removeAll {
-            "${ChatColor.GOLD}Soulbound" in it.itemMeta.lore
-        }
+        player.inventory.contents =
+            player.inventory.contents.map { if ("${ChatColor.GOLD}Soulbound" in (it?.itemMeta?.lore ?: emptyList())) null else it }
+                .toTypedArray()
     }
 
     @EventHandler
@@ -221,6 +228,8 @@ object AnnihilationListener : Listener {
         val team = currentGame.map.nexusLocations.toList().first { it.second == block.location }.first
         val mainScoreboard = AnnihilationPlugin.server.scoreboardManager.mainScoreboard
 
+        if (mainScoreboard.getPlayerTeam(player).name == team.name) return
+
         currentGame.nexus[team] = currentGame.nexus[team]!!.dec()
         AnnihilationPlugin.server.broadcastMessage("$prefix ${mainScoreboard.getPlayerTeam(player).prefix}${player.displayName}${ChatColor.RESET} attacked ${team}Nexus (${currentGame.nexus[team]})")
         AnnihilationPlugin.server.onlinePlayers.forEach { ScoreboardUtils.update(it) }
@@ -240,12 +249,12 @@ object AnnihilationListener : Listener {
         val killer = e.entity.killer
         val mainboard = AnnihilationPlugin.server.scoreboardManager.mainScoreboard
 
-        val deadColor = mainboard.getPlayerTeam(dead).prefix
+        val deadColor = if (mainboard.getPlayerTeam(dead) != null) mainboard.getPlayerTeam(dead).prefix else ""
 
         e.droppedExp = 0
 
         if (killer != null) {
-            val killerColor = mainboard.getPlayerTeam(killer).prefix
+            val killerColor = if (mainboard.getPlayerTeam(killer) != null) mainboard.getPlayerTeam(killer).prefix else ""
             e.deathMessage = "$killerColor${killer.displayName}${ChatColor.RESET} killed $deadColor${dead.displayName}"
         } else {
             e.deathMessage = "$deadColor${dead.displayName} ${ChatColor.RESET}dead"
@@ -293,31 +302,52 @@ object AnnihilationListener : Listener {
     }
 
     @EventHandler
-    private fun removeCombatLogger(e: PlayerQuitEvent) {
-        val player = e.player
+    private fun onAttackCombatLogger(e: PlayerDeathEvent) {
+        val entity = e.entity ?: return
+        if (!CitizensAPI.getNPCRegistry().isNPC(entity)) return
 
-        val logger = player.world.spawnEntity(player.location, EntityType.PLAYER) as Player
-        logger.health = .5
-        logger.inventory.contents = player.inventory.contents
-        combatLoggers[player.uniqueId] = logger
-
-        TimerAPI.build("combatlogger-autoremove", 15, 20) {
-            if (!logger.isDead) logger.remove()
+        entity.inventory.contents.filterNotNull().forEach {
+            entity.world.dropItemNaturally(entity.location, it)
         }
     }
 
     @EventHandler
-    private fun createCombatLogger(e: PlayerJoinEvent) {
+    private fun createCombatLogger(e: PlayerQuitEvent) {
         val player = e.player
-        val logger = combatLoggers[player.uniqueId]
+        val logger = CitizensAPI.getNPCRegistry().createNPC(EntityType.PLAYER, player.name)
+        logger.spawn(player.location)
+
+        TimerAPI.build("combatlogger-autoremove", 15, 20, 1) {
+            start {
+                val loggerEntity = logger.entity as Player
+                logger.isFlyable = true
+                logger.isProtected = false
+                loggerEntity.health = player.health
+                loggerEntity.allowFlight = true
+                loggerEntity.isFlying = true
+                loggerEntity.inventory.helmet = player.inventory.helmet
+                loggerEntity.inventory.chestplate = player.inventory.chestplate
+                loggerEntity.inventory.leggings = player.inventory.leggings
+                loggerEntity.inventory.boots = player.inventory.boots
+                loggerEntity.inventory.addItem(*player.inventory.contents.filterNotNull().toTypedArray())
+            }
+            end {
+                logger.despawn()
+            }
+        }.run()
+    }
+
+    @EventHandler
+    private fun removeCombatLogger(e: PlayerJoinEvent) {
+        val player = e.player
+        val logger = CitizensAPI.getNPCRegistry().firstOrNull { it.name == player.name }
 
         if (logger != null) {
-            if (logger.isDead) {
-                player.inventory.clear()
-            } else {
-                logger.remove()
-                combatLoggers.remove(player.uniqueId)
+            if ((logger.entity as Player).health < 1.0) {
+                player.inventory.contents = emptyArray()
+                player.spigot().respawn()
             }
+            CitizensAPI.getNPCRegistry().removeAll { it.id == logger.id }
         }
     }
 
@@ -368,21 +398,59 @@ object AnnihilationListener : Listener {
     private fun registerPlacedBlock(e: BlockPlaceEvent) { if (e.player.gameMode != GameMode.CREATIVE) placedBlocks += e.blockPlaced }
 
     @EventHandler
+    private fun directlyAddItems(e: BlockBreakEvent) {
+        val block = e.block
+        val player = e.player
+        val tool = player.itemInHand ?: return
+        val currentGame = AnnihilationGameManager.currentGame
+
+        if (
+            (!block.isProperTool(tool.type) && player.gameMode != GameMode.CREATIVE)
+            || (currentGame != null && block.location in currentGame.map.enderFurnaces)
+        ) {
+            e.isCancelled = true
+            return
+        }
+
+        if (block.type == Material.GRAVEL) {
+            player.inventory.addItem(
+                ItemStack(Material.STRING, Random.nextInt(0..2)),
+                ItemStack(Material.FLINT, Random.nextInt(0..2)),
+                ItemStack(Material.FEATHER, Random.nextInt(0..2)),
+                ItemStack(Material.ARROW, Random.nextInt(0..1))
+            )
+        } else {
+            player.inventory.addItem(*block.getFortuneDrops(tool).toTypedArray()).forEach { (_, item) ->
+                player.world.dropItemNaturally(player.location, item)
+            }
+        }
+    }
+
+    @EventHandler
     private fun restoreOreMined(e: BlockBreakEvent) {
         val block = e.block
         val player = e.player
         val tool = player.itemInHand ?: return
         val currentGame = AnnihilationGameManager.currentGame
 
-        if (currentGame != null && block.location in currentGame.map.enderFurnaces) {
+        if (
+            (!block.isProperTool(tool.type) && player.gameMode != GameMode.CREATIVE)
+            || (currentGame != null && block.location in currentGame.map.enderFurnaces)
+            ) {
             e.isCancelled = true
             return
         }
 
-        if (!block.isProperTool(tool.type) && player.gameMode != GameMode.CREATIVE) {
-            e.isCancelled = true
-            return
-        }
+        fun shouldBedrock(material: Material) = material in listOf(
+            Material.IRON_ORE,
+            Material.LAPIS_ORE,
+            Material.COAL_ORE,
+            Material.GOLD_ORE,
+            Material.REDSTONE_ORE,
+            Material.DIAMOND_ORE,
+            Material.EMERALD_ORE,
+            Material.GRAVEL
+        )
 
         when (block.type) {
             Material.IRON_ORE,
@@ -396,32 +464,19 @@ object AnnihilationListener : Listener {
             Material.LOG,
             Material.MELON_BLOCK
             -> {
-                e.isCancelled = true
-                e.player.itemInHand.durability = e.player.itemInHand.durability.dec().dec().dec()
                 if (block.type == Material.DIAMOND_ORE && (currentGame?.currentPhase?.int ?: 0) < 3) return
+                val origin = block.type
+
+                player.giveExp(e.expToDrop)
+                e.expToDrop = 0
+                block.type = if (shouldBedrock(origin)) Material.BEDROCK else Material.AIR
+
                 TimerAPI.build(
                     "restore-mine-${System.currentTimeMillis()}",
                     if (block.type == Material.DIAMOND_ORE || block.type == Material.EMERALD_ORE) 40 else 20,
                     20,
                     0
                 ) {
-                    val origin = block.type
-                    start {
-                        if (block.type == Material.GRAVEL) {
-                            player.inventory.addItem(
-                                ItemStack(Material.STRING, Random.nextInt(0..2)),
-                                ItemStack(Material.FLINT, Random.nextInt(0..2)),
-                                ItemStack(Material.FEATHER, Random.nextInt(0..2)),
-                                ItemStack(Material.ARROW, Random.nextInt(0..1))
-                            )
-                        } else {
-                            player.inventory.addItem(*block.getFortuneDrops(tool).toTypedArray()).forEach { (_, item) ->
-                                player.world.dropItemNaturally(player.location, item)
-                            }
-                        }
-                        player.giveExp(e.expToDrop)
-                        block.type = Material.BEDROCK
-                    }
                     end {
                         block.type = origin
                     }
