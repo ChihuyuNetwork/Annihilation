@@ -4,6 +4,7 @@ version: @version@
 depend:
   - TimerAPI
   - WorldEdit
+  - Citizens
 commands:
   shuffle:
     permission: annihilation.command.shuffle

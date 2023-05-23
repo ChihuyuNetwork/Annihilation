@@ -22,6 +22,7 @@ repositories {
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://hub.spigotmc.org/nexus/content/repositories/public/")
     maven("https://maven.enginehub.org/repo/")
+    maven("https://maven.citizensnpcs.co/repo")
 }
 
 /*
@@ -32,6 +33,9 @@ repositories {
 
 dependencies {
     compileOnly("org.spigotmc:spigot-api:$pluginVersion-R0.1-SNAPSHOT")
+    compileOnly("net.citizensnpcs:citizens-main:2.0.31-SNAPSHOT") {
+        exclude("*", "*")
+    }
     compileOnly("love.chihuyu:TimerAPI:1.2.1-SNAPSHOT")
     compileOnly("com.sk89q.worldedit:worldedit-core:6.1.4-SNAPSHOT")
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:6.1.4-SNAPSHOT")

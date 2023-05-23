@@ -8,6 +8,7 @@ import love.chihuyu.annihilation.listener.CancelListener
 import love.chihuyu.annihilation.map.AnnihilationMap
 import love.chihuyu.annihilation.map.AnnihilationMapManager
 import love.chihuyu.annihilation.map.ProtectedZone
+import net.citizensnpcs.api.CitizensAPI
 import org.bukkit.ChatColor
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.configuration.serialization.ConfigurationSerialization
@@ -56,5 +57,10 @@ class AnnihilationPlugin : JavaPlugin() {
         ).forEach {
             server.pluginManager.registerEvents(it, this)
         }
+    }
+
+    override fun onDisable() {
+        super.onDisable()
+        CitizensAPI.getNPCRegistry().deregisterAll()
     }
 }
