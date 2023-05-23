@@ -17,7 +17,7 @@ object ScoreboardUtils {
         val title = "annihilation"
         val objective = mainboard.registerNewObjective(title, "")
         val scores = mutableListOf("")
-        if (game == null) {
+        if (game == null || !game.isStarted) {
             scores.add("           ${ChatColor.BOLD}Waiting...")
             scores.add(" ")
         } else {
