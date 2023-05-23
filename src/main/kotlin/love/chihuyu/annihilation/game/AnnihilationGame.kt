@@ -13,8 +13,10 @@ class AnnihilationGame(
 ) {
     var currentPhase = Phase.FIRST
     val nexus = map.teams.associateWith { 100 }.toMutableMap()
+    var isStarted = false
     val phaseTimer: Timer = TimerAPI.build("phaseTimer-${map.id}", 600 * 4, 20, 0) {
         start {
+            isStarted = true
             currentPhase = Phase.FIRST
             AnnihilationPlugin.server.broadcastMessage(
                 """
@@ -28,6 +30,11 @@ class AnnihilationGame(
                 $prefix ${ChatColor.RESET}███████
                 """.trimIndent()
             )
+
+            AnnihilationPlugin.server.onlinePlayers.forEach {
+                it.inventory.clear()
+                it.health = .0
+            }
         }
         tick {
             ScoreboardUtils.updateAll()
