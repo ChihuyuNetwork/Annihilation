@@ -3,10 +3,12 @@ package love.chihuyu.annihilation.game
 import love.chihuyu.annihilation.AnnihilationPlugin.Companion.AnnihilationPlugin
 import love.chihuyu.annihilation.AnnihilationPlugin.Companion.prefix
 import love.chihuyu.annihilation.map.AnnihilationMap
+import love.chihuyu.annihilation.utils.MapUtils.giveSoulbounds
 import love.chihuyu.annihilation.utils.ScoreboardUtils
 import love.chihuyu.timerapi.TimerAPI
 import love.chihuyu.timerapi.timer.Timer
 import org.bukkit.ChatColor
+import org.bukkit.GameMode
 
 class AnnihilationGame(
     val map: AnnihilationMap
@@ -16,6 +18,17 @@ class AnnihilationGame(
     var isStarted = false
     val phaseTimer: Timer = TimerAPI.build("phaseTimer-${map.id}", 600 * 4, 20, 0) {
         start {
+            AnnihilationPlugin.server.onlinePlayers.forEach {
+                it.inventory.clear()
+                it.gameMode = GameMode.SURVIVAL
+                it.foodLevel = 20
+                it.health = it.maxHealth
+                val teamSpawn = map.spawns[ChatColor.valueOf(AnnihilationPlugin.server.scoreboardManager.mainScoreboard.getPlayerTeam(it).name)]?.random()
+                it.setBedSpawnLocation(teamSpawn, true)
+                it.teleport(teamSpawn)
+                it.giveSoulbounds()
+            }
+
             isStarted = true
             currentPhase = Phase.FIRST
             AnnihilationPlugin.server.broadcastMessage(
@@ -30,11 +43,6 @@ class AnnihilationGame(
                 $prefix ${ChatColor.RESET}███████
                 """.trimIndent()
             )
-
-            AnnihilationPlugin.server.onlinePlayers.forEach {
-                it.inventory.clear()
-                it.health = .0
-            }
         }
         tick {
             ScoreboardUtils.updateAll()
@@ -52,7 +60,7 @@ class AnnihilationGame(
                         $prefix ${ChatColor.RESET}██${ChatColor.YELLOW}█${ChatColor.RESET}████
                         $prefix ${ChatColor.RESET}██${ChatColor.YELLOW}███${ChatColor.RESET}██
                         $prefix ${ChatColor.RESET}███████
-                        $prefix ${ChatColor.RESET}${ChatColor.BOLD}・Nexus Damagable
+                        $prefix ${ChatColor.RESET}${ChatColor.BOLD}* Nexus Damagable
                         """.trimIndent()
                     )
                 }
@@ -68,8 +76,8 @@ class AnnihilationGame(
                         $prefix ${ChatColor.RESET}████${ChatColor.GOLD}█${ChatColor.RESET}██
                         $prefix ${ChatColor.RESET}██${ChatColor.GOLD}███${ChatColor.RESET}██
                         $prefix ${ChatColor.RESET}███████
-                        $prefix ${ChatColor.RESET}${ChatColor.BOLD}・Spawn Diamonds
-                        $prefix ${ChatColor.RESET}${ChatColor.BOLD}・Spawn Witches
+                        $prefix ${ChatColor.RESET}${ChatColor.BOLD}* Spawn Diamonds
+                        $prefix ${ChatColor.RESET}${ChatColor.BOLD}* Spawn Witches
                         """.trimIndent()
                     )
                 }
@@ -85,8 +93,8 @@ class AnnihilationGame(
                         $prefix ${ChatColor.RESET}████${ChatColor.RED}█${ChatColor.RESET}██
                         $prefix ${ChatColor.RESET}████${ChatColor.RED}█${ChatColor.RESET}██
                         $prefix ${ChatColor.RESET}███████
-                        $prefix ${ChatColor.RESET}${ChatColor.BOLD}・Added Blaze Powder to Shop
-                        $prefix ${ChatColor.RESET}${ChatColor.BOLD}・Spawn Mid Buff
+                        $prefix ${ChatColor.RESET}${ChatColor.BOLD}* Added Blaze Powder to Shop
+                        $prefix ${ChatColor.RESET}${ChatColor.BOLD}* Spawn Mid Buff
                         """.trimIndent()
                     )
                 }
@@ -104,7 +112,7 @@ class AnnihilationGame(
                 $prefix ${ChatColor.RESET}████${ChatColor.DARK_RED}█${ChatColor.RESET}██
                 $prefix ${ChatColor.RESET}██${ChatColor.DARK_RED}███${ChatColor.RESET}██
                 $prefix ${ChatColor.RESET}███████
-                $prefix ${ChatColor.RESET}${ChatColor.BOLD}・2x Nexus Damage
+                $prefix ${ChatColor.RESET}${ChatColor.BOLD}* 2x Nexus Damage
                 """.trimIndent()
             )
         }

@@ -18,6 +18,7 @@ import java.io.File
 class AnnihilationPlugin : JavaPlugin() {
     companion object {
         val prefix = "${ChatColor.GOLD}[Anni]${ChatColor.RESET}"
+        val soulboundTag = "${ChatColor.GOLD}Soulbound"
         lateinit var mapFile: File
         lateinit var AnnihilationPlugin: JavaPlugin
         lateinit var AnnihilationMapConfig: YamlConfiguration

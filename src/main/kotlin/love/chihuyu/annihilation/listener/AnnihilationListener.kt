@@ -2,10 +2,13 @@ package love.chihuyu.annihilation.listener
 
 import love.chihuyu.annihilation.AnnihilationPlugin.Companion.AnnihilationPlugin
 import love.chihuyu.annihilation.AnnihilationPlugin.Companion.prefix
+import love.chihuyu.annihilation.AnnihilationPlugin.Companion.soulboundTag
 import love.chihuyu.annihilation.game.AnnihilationGameManager
 import love.chihuyu.annihilation.utils.BlockUtils.getFortuneDrops
 import love.chihuyu.annihilation.utils.BlockUtils.isProperTool
 import love.chihuyu.annihilation.utils.ItemUtils
+import love.chihuyu.annihilation.utils.MapUtils.giveSoulbounds
+import love.chihuyu.annihilation.utils.MapUtils.isProtected
 import love.chihuyu.annihilation.utils.ScoreboardUtils
 import love.chihuyu.timerapi.TimerAPI
 import net.citizensnpcs.api.CitizensAPI
@@ -125,83 +128,18 @@ object AnnihilationListener : Listener {
     private fun removeSoulboundOnDrop(e: PlayerDropItemEvent) {
         val item = e.itemDrop
 
-        if ("${ChatColor.GOLD}Soulbound" in item.itemStack.itemMeta.lore) item.remove()
+        if (soulboundTag in item.itemStack.itemMeta.lore) item.remove()
     }
 
     @EventHandler
     private fun removeSoulboundOnDeath(e: PlayerDeathEvent) {
-        val player = e.entity
-        player.inventory.contents =
-            player.inventory.contents.map { if ("${ChatColor.GOLD}Soulbound" in (it?.itemMeta?.lore ?: emptyList())) null else it }
-                .toTypedArray()
+        e.drops.removeAll { it?.itemMeta?.lore?.contains(soulboundTag) == true }
     }
 
     @EventHandler
     private fun giveSoulbound(e: PlayerRespawnEvent) {
         if (AnnihilationGameManager.currentGame == null) return
-        val player = e.player
-        val team = AnnihilationPlugin.server.scoreboardManager.mainScoreboard.getPlayerTeam(player)
-        val colorMap = mapOf(
-            ChatColor.RED to Color.RED,
-            ChatColor.GOLD to Color.ORANGE,
-            ChatColor.DARK_RED to Color.MAROON,
-            ChatColor.AQUA to Color.AQUA,
-            ChatColor.BLUE to Color.NAVY,
-            ChatColor.GREEN to Color.GREEN,
-            ChatColor.DARK_AQUA to Color.TEAL,
-            ChatColor.WHITE to Color.WHITE,
-            ChatColor.GRAY to Color.SILVER,
-            ChatColor.YELLOW to Color.YELLOW,
-            ChatColor.BLACK to Color.BLACK,
-            ChatColor.DARK_GRAY to Color.GRAY,
-            ChatColor.DARK_BLUE to Color.BLUE,
-            ChatColor.DARK_GREEN to Color.OLIVE,
-            ChatColor.DARK_PURPLE to Color.PURPLE,
-            ChatColor.LIGHT_PURPLE to Color.FUCHSIA,
-        )
-
-        player.inventory.helmet = ItemUtils.createLeatherArmor(
-            Material.LEATHER_HELMET,
-            lore = listOf("${ChatColor.GOLD}Soulbound"),
-            unbreakable = true,
-            color = colorMap[ChatColor.valueOf(team.name)]
-        )
-        player.inventory.chestplate = ItemUtils.createLeatherArmor(
-            Material.LEATHER_CHESTPLATE,
-            lore = listOf("${ChatColor.GOLD}Soulbound"),
-            unbreakable = true,
-            color = colorMap[ChatColor.valueOf(team.name)]
-        )
-        player.inventory.leggings = ItemUtils.createLeatherArmor(
-            Material.LEATHER_LEGGINGS,
-            lore = listOf("${ChatColor.GOLD}Soulbound"),
-            unbreakable = true,
-            color = colorMap[ChatColor.valueOf(team.name)]
-        )
-        player.inventory.boots = ItemUtils.createLeatherArmor(
-            Material.LEATHER_BOOTS,
-            lore = listOf("${ChatColor.GOLD}Soulbound"),
-            unbreakable = true,
-            color = colorMap[ChatColor.valueOf(team.name)]
-        )
-        player.inventory.addItem(
-            ItemUtils.create(
-                Material.WOOD_SWORD,
-                lore = listOf("${ChatColor.GOLD}Soulbound")
-            ),
-            ItemUtils.create(
-                Material.STONE_PICKAXE,
-                lore = listOf("${ChatColor.GOLD}Soulbound")
-            ),
-            ItemUtils.create(
-                Material.STONE_AXE,
-                lore = listOf("${ChatColor.GOLD}Soulbound")
-            ),
-            ItemUtils.create(
-                Material.STONE_SPADE,
-                lore = listOf("${ChatColor.GOLD}Soulbound")
-            ),
-        )
+        e.player.giveSoulbounds()
     }
 
     @EventHandler
@@ -278,7 +216,7 @@ object AnnihilationListener : Listener {
     private fun autoRespawning(e: PlayerDeathEvent) {
         val player = e.entity
 
-        TimerAPI.build("annihilation-respawn", 20, 1) {
+        TimerAPI.build("annihilation-respawn", 1, 20) {
             end {
                 player.spigot().respawn()
             }
@@ -359,20 +297,6 @@ object AnnihilationListener : Listener {
     }
 
     @EventHandler
-    private fun protectFromBreak(e: BlockBreakEvent) {
-        val currentGame = AnnihilationGameManager.currentGame
-        val block = e.block
-        val player = e.player
-        if (
-            currentGame?.map?.protectedZone?.any { block.x in it.minX..it.maxX && block.z in it.minZ..it.maxZ } == true &&
-            player.gameMode != GameMode.CREATIVE
-        ) {
-            e.isCancelled = true
-            return
-        }
-    }
-
-    @EventHandler
     private fun protectFromPlace(e: BlockPlaceEvent) {
         val currentGame = AnnihilationGameManager.currentGame
         val block = e.block
@@ -404,25 +328,17 @@ object AnnihilationListener : Listener {
         val tool = player.itemInHand ?: return
         val currentGame = AnnihilationGameManager.currentGame
 
+        if (block.isProtected(player)) {
+            e.isCancelled = true
+            return
+        }
+
         if (
             (!block.isProperTool(tool.type) && player.gameMode != GameMode.CREATIVE)
             || (currentGame != null && block.location in currentGame.map.enderFurnaces)
         ) {
             e.isCancelled = true
             return
-        }
-
-        if (block.type == Material.GRAVEL) {
-            player.inventory.addItem(
-                ItemStack(Material.STRING, Random.nextInt(0..2)),
-                ItemStack(Material.FLINT, Random.nextInt(0..2)),
-                ItemStack(Material.FEATHER, Random.nextInt(0..2)),
-                ItemStack(Material.ARROW, Random.nextInt(0..1))
-            )
-        } else {
-            player.inventory.addItem(*block.getFortuneDrops(tool).toTypedArray()).forEach { (_, item) ->
-                player.world.dropItemNaturally(player.location, item)
-            }
         }
     }
 
@@ -432,6 +348,11 @@ object AnnihilationListener : Listener {
         val player = e.player
         val tool = player.itemInHand ?: return
         val currentGame = AnnihilationGameManager.currentGame
+
+        if (block.isProtected(player)) {
+            e.isCancelled = true
+            return
+        }
 
         if (
             (!block.isProperTool(tool.type) && player.gameMode != GameMode.CREATIVE)
@@ -465,7 +386,21 @@ object AnnihilationListener : Listener {
             Material.MELON_BLOCK
             -> {
                 if (block.type == Material.DIAMOND_ORE && (currentGame?.currentPhase?.int ?: 0) < 3) return
+                e.isCancelled = true
                 val origin = block.type
+
+                if (block.type == Material.GRAVEL) {
+                    player.inventory.addItem(
+                        ItemStack(Material.STRING, Random.nextInt(0..2)),
+                        ItemStack(Material.FLINT, Random.nextInt(0..2)),
+                        ItemStack(Material.FEATHER, Random.nextInt(0..2)),
+                        ItemStack(Material.ARROW, Random.nextInt(0..1))
+                    )
+                } else {
+                    player.inventory.addItem(*block.getFortuneDrops(tool).toTypedArray()).forEach { (_, item) ->
+                        player.world.dropItemNaturally(player.location, item)
+                    }
+                }
 
                 player.giveExp(e.expToDrop)
                 e.expToDrop = 0
