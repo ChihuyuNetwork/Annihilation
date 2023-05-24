@@ -23,6 +23,8 @@ class AnnihilationGame(
                 it.gameMode = GameMode.SURVIVAL
                 it.foodLevel = 20
                 it.health = it.maxHealth
+                it.exp = 0f
+                it.level = 0
                 val teamSpawn = map.spawns[ChatColor.valueOf(AnnihilationPlugin.server.scoreboardManager.mainScoreboard.getPlayerTeam(it).name)]?.random()
                 it.setBedSpawnLocation(teamSpawn, true)
                 it.teleport(teamSpawn)
@@ -52,7 +54,7 @@ class AnnihilationGame(
                     currentPhase = Phase.SECOND
                     AnnihilationPlugin.server.broadcastMessage(
                         """
-                        $prefix ${ChatColor.WHITE}${ChatColor.BOLD}Phase 1 > 2
+                        $prefix ${ChatColor.WHITE}${ChatColor.BOLD}Phase ${ChatColor.GREEN}${ChatColor.BOLD}1 ${ChatColor.RESET}> ${ChatColor.YELLOW}${ChatColor.BOLD}2
                         $prefix ${ChatColor.RESET}███████
                         $prefix ${ChatColor.RESET}██${ChatColor.YELLOW}███${ChatColor.RESET}██
                         $prefix ${ChatColor.RESET}████${ChatColor.YELLOW}█${ChatColor.RESET}██
@@ -68,7 +70,7 @@ class AnnihilationGame(
                     currentPhase = Phase.THIRD
                     AnnihilationPlugin.server.broadcastMessage(
                         """
-                        $prefix ${ChatColor.WHITE}${ChatColor.BOLD}Phase 2 > 3
+                        $prefix ${ChatColor.WHITE}${ChatColor.BOLD}Phase ${ChatColor.YELLOW}${ChatColor.BOLD}2 ${ChatColor.RESET}> ${ChatColor.GOLD}${ChatColor.BOLD}3
                         $prefix ${ChatColor.RESET}███████
                         $prefix ${ChatColor.RESET}██${ChatColor.GOLD}███${ChatColor.RESET}██
                         $prefix ${ChatColor.RESET}████${ChatColor.GOLD}█${ChatColor.RESET}██
@@ -85,7 +87,7 @@ class AnnihilationGame(
                     currentPhase = Phase.FOURTH
                     AnnihilationPlugin.server.broadcastMessage(
                         """
-                        $prefix ${ChatColor.WHITE}${ChatColor.BOLD}Phase 3 > 4
+                        $prefix ${ChatColor.WHITE}${ChatColor.BOLD}Phase ${ChatColor.GOLD}${ChatColor.BOLD}3 ${ChatColor.RESET}> ${ChatColor.RED}${ChatColor.BOLD}4
                         $prefix ${ChatColor.RESET}███████
                         $prefix ${ChatColor.RESET}██${ChatColor.RED}█${ChatColor.RESET}█${ChatColor.RED}█${ChatColor.RESET}██
                         $prefix ${ChatColor.RESET}██${ChatColor.RED}█${ChatColor.RESET}█${ChatColor.RED}█${ChatColor.RESET}██
@@ -104,7 +106,7 @@ class AnnihilationGame(
             currentPhase = Phase.LAST
             AnnihilationPlugin.server.broadcastMessage(
                 """
-                $prefix ${ChatColor.RESET}${ChatColor.BOLD}Phase 4 > 5
+                $prefix ${ChatColor.RESET}${ChatColor.BOLD}Phase ${ChatColor.RED}${ChatColor.BOLD}4 ${ChatColor.RESET}> ${ChatColor.DARK_RED}${ChatColor.BOLD}5
                 $prefix ${ChatColor.RESET}███████
                 $prefix ${ChatColor.RESET}██${ChatColor.DARK_RED}███${ChatColor.RESET}██
                 $prefix ${ChatColor.RESET}██${ChatColor.DARK_RED}█${ChatColor.RESET}████
@@ -115,6 +117,7 @@ class AnnihilationGame(
                 $prefix ${ChatColor.RESET}${ChatColor.BOLD}* 2x Nexus Damage
                 """.trimIndent()
             )
+            ScoreboardUtils.updateAll()
         }
     }
 }
