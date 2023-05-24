@@ -146,7 +146,7 @@ object AnnihilationListener : Listener {
     private fun autoTeamOnJoin(e: PlayerJoinEvent) {
         val player = e.player
         val currentGame = AnnihilationGameManager.currentGame
-        currentGame?.map?.teams?.map { AnnihilationPlugin.server.scoreboardManager.mainScoreboard.getTeam(it.name) }?.minBy { it.size }?.addPlayer(player)
+        currentGame?.map?.teams?.map { AnnihilationPlugin.server.scoreboardManager.mainScoreboard.getTeam(it.name) }?.minBy { team -> team.entries.filter { Bukkit.getOfflinePlayer(it).isOnline }.size }?.addPlayer(player)
     }
 
     @EventHandler
@@ -281,7 +281,7 @@ object AnnihilationListener : Listener {
         val logger = CitizensAPI.getNPCRegistry().firstOrNull { it.name == player.name }
 
         if (logger != null) {
-            if ((logger.entity as Player).health < 1.0) {
+            if ((logger.entity as? Player ?: return).health < 1.0) {
                 player.inventory.contents = emptyArray()
                 player.spigot().respawn()
             }
@@ -388,6 +388,8 @@ object AnnihilationListener : Listener {
                 if (block.type == Material.DIAMOND_ORE && (currentGame?.currentPhase?.int ?: 0) < 3) return
                 e.isCancelled = true
                 val origin = block.type
+                val originData = block.state.data
+                val originId = block.state.typeId
 
                 if (block.type == Material.GRAVEL) {
                     player.inventory.addItem(
@@ -405,6 +407,9 @@ object AnnihilationListener : Listener {
                 player.giveExp(e.expToDrop)
                 e.expToDrop = 0
                 block.type = if (shouldBedrock(origin)) Material.BEDROCK else Material.AIR
+                player.itemInHand = player.itemInHand.apply {
+                    durability = (1 * durability.dec().dec()).toShort()
+                }
 
                 TimerAPI.build(
                     "restore-mine-${System.currentTimeMillis()}",
@@ -414,6 +419,9 @@ object AnnihilationListener : Listener {
                 ) {
                     end {
                         block.type = origin
+                        block.state.typeId = originId
+                        block.state.data = originData
+                        block.state.update(true, true)
                     }
                 }.run()
             }
