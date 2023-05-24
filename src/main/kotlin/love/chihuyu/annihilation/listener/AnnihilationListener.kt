@@ -407,8 +407,9 @@ object AnnihilationListener : Listener {
                 player.giveExp(e.expToDrop)
                 e.expToDrop = 0
                 block.type = if (shouldBedrock(origin)) Material.BEDROCK else Material.AIR
+                val od = tool.durability
                 player.itemInHand = player.itemInHand.apply {
-                    durability = (1 * durability.dec().dec()).toShort()
+                    durability = (type.maxDurability - od.dec()).toShort()
                 }
 
                 TimerAPI.build(
