@@ -65,7 +65,7 @@ object AnnihilationListener : Listener {
         val block = e.block
         val currentGame = AnnihilationGameManager.currentGame ?: return
 
-        if (block.type != Material.OBSIDIAN || currentGame.currentPhase.int < 4 || block.location !in currentGame.map.midBuffs) return
+        if (block.type != Material.OBSIDIAN || currentGame.currentPhase.int < 3 || block.location !in currentGame.map.midBuffs) return
 
         val player = e.player
 
