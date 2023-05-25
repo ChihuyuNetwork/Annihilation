@@ -20,21 +20,62 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.*
-import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.material.Tree
-import java.util.*
 import kotlin.random.Random
 import kotlin.random.nextInt
 
 object AnnihilationListener : Listener {
     private val placedBlocks = mutableListOf<Block>()
-    private val enderFurnaces = mutableMapOf<UUID, Inventory>()
+
+    @EventHandler
+    private fun giveMidBuff(e: InventoryClickEvent) {
+        val player = e.whoClicked
+        val inv = e.clickedInventory
+        if (inv.name != "${ChatColor.DARK_PURPLE}${ChatColor.BOLD}Buff Menu ${ChatColor.GRAY}(Choose one!)") return
+        val item = e.currentItem
+
+        e.isCancelled = true
+        player.inventory.addItem(item).forEach { (_, item) ->
+            player.world.dropItemNaturally(player.location, item)
+        }
+    }
+
+    @EventHandler
+    private fun openMidBuffMenu(e: PlayerInteractEvent) {
+        if (!e.hasItem() || (e.action != Action.RIGHT_CLICK_AIR && e.action != Action.RIGHT_CLICK_BLOCK)) return
+        val item = e.item
+        if (!item.itemMeta.hasDisplayName() || item.itemMeta.displayName != "${ChatColor.DARK_PURPLE}${ChatColor.BOLD}Mid Buff") return
+
+        val player = e.player
+        player.openInventory(Bukkit.createInventory(null, 27, "${ChatColor.DARK_PURPLE}${ChatColor.BOLD}Buff Menu ${ChatColor.GRAY}(Choose one!)").apply {
+
+        })
+    }
+
+    @EventHandler
+    private fun onMidBuff(e: BlockBreakEvent) {
+        val block = e.block
+        val currentGame = AnnihilationGameManager.currentGame ?: return
+
+        if (block.type != Material.OBSIDIAN || currentGame.currentPhase.int < 5) return
+
+        val player = e.player
+
+        player.inventory.addItem(ItemUtils.create(
+            Material.NETHER_STAR,
+            "${ChatColor.DARK_PURPLE}${ChatColor.BOLD}Mid Buff",
+            lore = listOf("${ChatColor.DARK_GRAY}Right click to open buff bonus menu.")
+        )).forEach { (_, item) ->
+            player.world.dropItemNaturally(player.location, item)
+        }
+    }
 
     @EventHandler
     private fun teamPrivatedChat(e: AsyncPlayerChatEvent) {
@@ -42,7 +83,7 @@ object AnnihilationListener : Listener {
         val team = AnnihilationPlugin.server.scoreboardManager.mainScoreboard.getPlayerTeam(player)
 
         if (e.message[0] == '!') {
-            e.format = "${ChatColor.DARK_PURPLE}[${team.name[0].uppercase()}]${ChatColor.RESET} ${player.name}: ${e.message}".removePrefix("!")
+            e.format = "${ChatColor.DARK_PURPLE}[${team.name[0].uppercase()}]${ChatColor.RESET} ${player.name}: ${e.message}".replaceFirst("!", "")
         } else {
             e.format = "${ChatColor.valueOf(team.name)}[${team.name[0].uppercase()}]${ChatColor.RESET} ${player.name}: ${e.message}"
             e.recipients.clear()
