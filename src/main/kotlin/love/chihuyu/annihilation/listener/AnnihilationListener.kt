@@ -26,14 +26,40 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.player.*
+import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.material.Tree
+import java.util.*
 import kotlin.random.Random
 import kotlin.random.nextInt
 
 object AnnihilationListener : Listener {
     private val placedBlocks = mutableListOf<Block>()
+    private val enderChests = mutableMapOf<UUID, Inventory>()
+
+    @EventHandler
+    private fun saveEnderchest(e: InventoryCloseEvent) {
+        val player = e.player
+        val inventory = e.inventory
+
+        if (inventory.name != "${ChatColor.DARK_PURPLE}${ChatColor.BOLD}Ender Chest") return
+
+        enderChests[player.uniqueId] = inventory
+    }
+
+    @EventHandler
+    private fun openEnderchest(e: PlayerInteractEvent) {
+        val player = e.player
+        val block = e.clickedBlock
+
+        if (block.type != Material.ENDER_CHEST) return
+
+        val chest = enderChests[player.uniqueId] ?: Bukkit.createInventory(player, 9, "${ChatColor.DARK_PURPLE}${ChatColor.BOLD}Ender Chest")
+        player.openInventory(chest)
+        enderChests[player.uniqueId] = chest
+    }
 
     @EventHandler
     private fun giveMidBuff(e: InventoryClickEvent) {
