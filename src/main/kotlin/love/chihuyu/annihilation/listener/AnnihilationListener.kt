@@ -14,6 +14,7 @@ import love.chihuyu.timerapi.TimerAPI
 import net.citizensnpcs.api.CitizensAPI
 import org.bukkit.*
 import org.bukkit.block.Block
+import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
@@ -27,6 +28,7 @@ import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.*
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
+import org.bukkit.material.Tree
 import java.util.*
 import kotlin.random.Random
 import kotlin.random.nextInt
@@ -389,7 +391,7 @@ object AnnihilationListener : Listener {
                 e.isCancelled = true
                 val origin = block.type
                 val originData = block.state.data
-                val originId = block.state.typeId
+                val directional = originData as? Tree
 
                 if (block.type == Material.GRAVEL) {
                     player.inventory.addItem(
@@ -407,10 +409,7 @@ object AnnihilationListener : Listener {
                 player.giveExp(e.expToDrop)
                 e.expToDrop = 0
                 block.type = if (shouldBedrock(origin)) Material.BEDROCK else Material.AIR
-                val od = tool.durability
-                player.itemInHand = player.itemInHand.apply {
-                    durability = (type.maxDurability - od.dec()).toShort()
-                }
+                player.itemInHand.durability++
 
                 TimerAPI.build(
                     "restore-mine-${System.currentTimeMillis()}",
@@ -420,9 +419,12 @@ object AnnihilationListener : Listener {
                 ) {
                     end {
                         block.type = origin
-                        block.state.typeId = originId
-                        block.state.data = originData
-                        block.state.update(true, true)
+                        val data = block.state.data
+                        if (data is Tree) {
+                            data.direction = directional?.direction ?: BlockFace.UP
+                            block.state.data = data
+                        }
+                        block.state.update(true)
                     }
                 }.run()
             }
