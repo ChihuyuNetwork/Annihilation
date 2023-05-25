@@ -23,7 +23,6 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
-import org.bukkit.event.block.BlockDamageEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -35,16 +34,6 @@ import kotlin.random.nextInt
 
 object AnnihilationListener : Listener {
     private val placedBlocks = mutableListOf<Block>()
-
-    @EventHandler
-    fun progressMineNexus(e: BlockDamageEvent) {
-        val player = e.player
-        val block = e.block
-        val currentGame = AnnihilationGameManager.currentGame ?: return
-        if (block.type != Material.ENDER_STONE || block.location !in currentGame.map.nexusLocations.values) return
-
-
-    }
 
     @EventHandler
     private fun giveMidBuff(e: InventoryClickEvent) {
