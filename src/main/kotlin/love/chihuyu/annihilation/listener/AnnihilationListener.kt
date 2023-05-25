@@ -24,7 +24,6 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.*
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
@@ -226,22 +225,6 @@ object AnnihilationListener : Listener {
     }
 
     @EventHandler
-    private fun openOrCreateEnderfurnace(e: PlayerInteractEvent) {
-        val block = e.clickedBlock ?: return
-        val player = e.player
-        val furnace = enderFurnaces[player.uniqueId]
-        val currentGame = AnnihilationGameManager.currentGame ?: return
-
-        if (block.type == Material.FURNACE) {
-            if (block.location !in currentGame.map.enderFurnaces) return
-            e.isCancelled = true
-            val inventory = enderFurnaces[player.uniqueId] ?: Bukkit.createInventory(player, InventoryType.FURNACE, "Ender Furnace")
-            if (furnace == null) enderFurnaces[player.uniqueId] = inventory
-            player.openInventory(inventory)
-        }
-    }
-
-    @EventHandler
     private fun onAttackCombatLogger(e: PlayerDeathEvent) {
         val entity = e.entity ?: return
         if (!CitizensAPI.getNPCRegistry().isNPC(entity)) return
@@ -273,6 +256,7 @@ object AnnihilationListener : Listener {
             }
             end {
                 logger.despawn()
+                CitizensAPI.getNPCRegistry().filter { it.id == logger.id }.forEach { CitizensAPI.getNPCRegistry().deregister(it) }
             }
         }.run()
     }
@@ -287,7 +271,7 @@ object AnnihilationListener : Listener {
                 player.inventory.contents = emptyArray()
                 player.spigot().respawn()
             }
-            CitizensAPI.getNPCRegistry().removeAll { it.id == logger.id }
+            CitizensAPI.getNPCRegistry().filter { it.id == logger.id }.forEach { CitizensAPI.getNPCRegistry().deregister(it) }
         }
     }
 
