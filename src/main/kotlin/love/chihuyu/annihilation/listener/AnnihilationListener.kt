@@ -69,6 +69,14 @@ object AnnihilationListener : Listener {
 
         val player = e.player
 
+        e.isCancelled = true
+        player.itemInHand.durability++
+        block.type = Material.AIR
+        TimerAPI.build("annihilation-restore-midbuff", 180, 20) {
+            block.type = Material.OBSIDIAN
+            AnnihilationPlugin.server.broadcastMessage("$prefix ${ChatColor.WHITE}Mid Buff Spawned.")
+        }
+
         player.inventory.addItem(ItemUtils.create(
             Material.NETHER_STAR,
             "${ChatColor.DARK_PURPLE}${ChatColor.BOLD}Mid Buff",
