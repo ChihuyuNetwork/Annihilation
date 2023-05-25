@@ -2,6 +2,7 @@ package love.chihuyu.annihilation.utils
 
 import love.chihuyu.annihilation.AnnihilationPlugin.Companion.AnnihilationPlugin
 import love.chihuyu.annihilation.game.AnnihilationGameManager
+import love.chihuyu.annihilation.game.Phase
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import org.bukkit.scoreboard.DisplaySlot
@@ -25,7 +26,7 @@ object ScoreboardUtils {
             scores.add("        ${ChatColor.STRIKETHROUGH}${ChatColor.BOLD}   ${ChatColor.RESET}${ChatColor.BOLD}Nexus${ChatColor.STRIKETHROUGH}${ChatColor.BOLD}   ")
             game.map.teams.forEach { scores.add("${ChatColor.BOLD}${game.nexus[it]} > $it${it.name}") }
             scores.add(" ")
-            scores.add("${ChatColor.BOLD}Phase ${game.currentPhase.int}${ChatColor.RESET} > ${nextPhase.floorDiv(60)}:${"%02d".format(nextPhase % 60)}")
+            scores.add("${ChatColor.BOLD}Phase ${game.currentPhase.int}${ChatColor.RESET} > ${if (game.currentPhase == Phase.LAST) 0 else nextPhase.floorDiv(60)}:${"%02d".format(nextPhase % 60)}")
             scores.add("${ChatColor.BOLD}Map${ChatColor.RESET} > ${ChatColor.GOLD}${ChatColor.BOLD}${game.map.displayName}")
             scores.add("  ")
         }
