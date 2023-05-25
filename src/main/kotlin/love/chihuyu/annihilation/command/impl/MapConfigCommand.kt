@@ -114,6 +114,46 @@ object MapConfigCommand : Command("mapconfig") {
                 )
                 sender.sendMessage("$prefix Map edited: removed protected zone")
             }
+            "add-witch-spawn" -> {
+                if (args.size < 2) return
+                val map = AnnihilationMapManager.cachedMaps[args[1]]!!
+                map.witchSpawns = map.witchSpawns.plus(
+                    sender.location.apply {
+                        x = x.roundToInt().toDouble()
+                        y = y.roundToInt().toDouble()
+                        z = z.roundToInt().toDouble()
+                    }
+                ).toMutableList()
+                sender.sendMessage("$prefix Map edited: added witch spawn")
+            }
+            "remove-witch-spawn" -> {
+                if (args.size < 2) return
+                val map = AnnihilationMapManager.cachedMaps[args[1]]!!
+                map.witchSpawns = map.witchSpawns.minus(
+                    sender.location.apply {
+                        x = x.roundToInt().toDouble()
+                        y = y.roundToInt().toDouble()
+                        z = z.roundToInt().toDouble()
+                    }
+                ).toMutableList()
+                sender.sendMessage("$prefix Map edited: removed witch spawn")
+            }
+            "add-mid-buff" -> {
+                if (args.size < 2) return
+                val map = AnnihilationMapManager.cachedMaps[args[1]]!!
+                val targetBlock = sender.getTargetBlock(setOf(Material.AIR), 3)
+                if (targetBlock.type != Material.OBSIDIAN) return
+                map.midBuffs.add(targetBlock.location)
+                sender.sendMessage("$prefix Map edited: added mid buff")
+            }
+            "remove-mid-buff" -> {
+                if (args.size < 2) return
+                val map = AnnihilationMapManager.cachedMaps[args[1]]!!
+                val targetBlock = sender.getTargetBlock(setOf(Material.AIR), 3)
+                if (targetBlock.type != Material.OBSIDIAN) return
+                map.midBuffs.remove(targetBlock.location)
+                sender.sendMessage("$prefix Map edited: removed mid buff")
+            }
         }
 
         AnnihilationMapManager.save()

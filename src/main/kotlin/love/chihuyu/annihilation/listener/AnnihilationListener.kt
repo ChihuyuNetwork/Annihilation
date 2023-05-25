@@ -4,6 +4,7 @@ import love.chihuyu.annihilation.AnnihilationPlugin.Companion.AnnihilationPlugin
 import love.chihuyu.annihilation.AnnihilationPlugin.Companion.prefix
 import love.chihuyu.annihilation.AnnihilationPlugin.Companion.soulboundTag
 import love.chihuyu.annihilation.game.AnnihilationGameManager
+import love.chihuyu.annihilation.game.Phase
 import love.chihuyu.annihilation.utils.BlockUtils.getFortuneDrops
 import love.chihuyu.annihilation.utils.BlockUtils.isProperTool
 import love.chihuyu.annihilation.utils.ItemUtils
@@ -22,6 +23,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.event.block.BlockDamageEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -35,9 +37,19 @@ object AnnihilationListener : Listener {
     private val placedBlocks = mutableListOf<Block>()
 
     @EventHandler
+    fun progressMineNexus(e: BlockDamageEvent) {
+        val player = e.player
+        val block = e.block
+        val currentGame = AnnihilationGameManager.currentGame ?: return
+        if (block.type != Material.ENDER_STONE || block.location !in currentGame.map.nexusLocations.values) return
+
+
+    }
+
+    @EventHandler
     private fun giveMidBuff(e: InventoryClickEvent) {
         val player = e.whoClicked
-        val inv = e.clickedInventory
+        val inv = e.clickedInventory ?: return
         if (inv.name != "${ChatColor.DARK_PURPLE}${ChatColor.BOLD}Buff Menu ${ChatColor.GRAY}(Choose one!)") return
         val item = e.currentItem
 
@@ -64,7 +76,7 @@ object AnnihilationListener : Listener {
         val block = e.block
         val currentGame = AnnihilationGameManager.currentGame ?: return
 
-        if (block.type != Material.OBSIDIAN || currentGame.currentPhase.int < 5) return
+        if (block.type != Material.OBSIDIAN || currentGame.currentPhase.int < 4 || block.location !in currentGame.map.midBuffs) return
 
         val player = e.player
 
@@ -210,7 +222,7 @@ object AnnihilationListener : Listener {
 
         if (mainScoreboard.getPlayerTeam(player).name == team.name) return
 
-        currentGame.nexus[team] = currentGame.nexus[team]!!.dec()
+        currentGame.nexus[team] = if (currentGame.currentPhase == Phase.LAST) currentGame.nexus[team]!!.dec().dec() else currentGame.nexus[team]!!.dec()
         AnnihilationPlugin.server.broadcastMessage("$prefix ${mainScoreboard.getPlayerTeam(player).prefix}${player.displayName}${ChatColor.RESET} attacked ${team}Nexus (${currentGame.nexus[team]})")
         AnnihilationPlugin.server.onlinePlayers.forEach { ScoreboardUtils.update(it) }
         if (currentGame.nexus[team] == 0) {

@@ -32,7 +32,8 @@ repositories {
  */
 
 dependencies {
-    compileOnly("org.spigotmc:spigot-api:$pluginVersion-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT")
+//    compileOnly(files("libs/spigot-1.8.8-R0.1-20190928.224340-1.jar"))
     compileOnly("net.citizensnpcs:citizens-main:2.0.31-SNAPSHOT") {
         exclude("*", "*")
     }
